@@ -21,8 +21,6 @@ def main() -> None:
         ],
     ).ask()
 
-    s01_convert_to_zarr = ConvertToZarrConfig.load()
-
     asked_for_config = False
     if "s01_convert_to_zarr" in create_config_for:
         s01_convert_to_zarr = ConvertToZarrConfig.prompt()
