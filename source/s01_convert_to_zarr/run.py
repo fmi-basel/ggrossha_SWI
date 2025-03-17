@@ -36,7 +36,12 @@ from rich.pretty import pretty_repr
 
 import dask
 
-from config import ConvertToZarrConfig
+import sys
+from faim_ipa.utils import get_git_root
+
+sys.path.append(str(get_git_root()))
+
+from source.s01_convert_to_zarr.config import ConvertToZarrConfig
 
 dask.config.set({"logging.distributed": "error"})
 
@@ -211,7 +216,7 @@ def main(config: ConvertToZarrConfig) -> None:
         stitched_da = da.rechunk(
             stitched_da,
             chunks=(
-                1,
+                get_time_chunk_size(config.preview),
                 1,
             )
             + tile_shape,
@@ -230,6 +235,10 @@ def main(config: ConvertToZarrConfig) -> None:
         yaml.safe_dump(outputs, f)
 
     logger.info("Done!")
+
+
+def get_time_chunk_size(is_preview: bool):
+    return 100 if is_preview else 10
 
 
 def parse_files(acquisition_dir: Union[Path, str]) -> pd.DataFrame:
@@ -301,7 +310,7 @@ def filter_files(files, selection_csv):
     return files
 
 
-def write_zarr(client, zarr_path, stitched_da, worm_acquisition):
+def write_zarr(client, zarr_path, stitched_da, worm_acquisition, is_preview=False):
     """
     Write dask-array to ome-zarr multiscale.
 
@@ -326,16 +335,16 @@ def write_zarr(client, zarr_path, stitched_da, worm_acquisition):
                 compute=False,
                 component=str(Path(group.path, "0")),
                 storage_options=dict(
-                    dimension_separator="/",
+                    dimension_separator=".",
                     chunks=(
-                        1,
+                        get_time_chunk_size(is_preview),
                         1,
                     )
                     + stitched_da.shape[2:],
                     write_empty_chunks=False,
                 ),
                 compressor=Blosc(cname="zstd", clevel=3, shuffle=Blosc.SHUFFLE),
-                dimension_separator=group._store._dimension_separator,
+                dimension_separator=".",
             )
         )
     )
