@@ -16,6 +16,13 @@ cache_status = "python -m faim_ipa.pixi.cache_status"
 source_status = "python -m faim_ipa.pixi.src_status source"
 log_commit = {cmd = 'python -m faim_ipa.pixi.log_commit $TASK', env = {TASK = ""}}
 
+[tasks.link_dataset]
+cmd = """
+cd raw_data ;
+ln -s $DATASET ;
+"""
+env = { DATASET = ""}
+
 [tasks.config]
 cmd = """
 mkdir -p $WD ;
