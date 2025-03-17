@@ -25,7 +25,7 @@ from faim_ipa.hcs.acquisition import TileAlignmentOptions, WellAcquisition
 from faim_ipa.stitching import DaskTileStitcher
 from faim_ipa.stitching.tile import Tile
 from faim_ipa.utils import create_logger
-from faim_ipa.visiview.acquisition import RegionAcquisitionOME
+from faim_ipa.visiview.acquisition import RegionAcquisitionOME, RegionAcquisitionSTK
 import dask.array as da
 from numcodecs import Blosc
 from ome_zarr.format import CurrentFormat
@@ -154,15 +154,27 @@ def main(config: ConvertToZarrConfig) -> None:
     for well in tqdm(wells):
         logger.info(f"Processing well {well}...")
         if not config.legacy_compressed_tif:
-            worm_acquisition = RegionAcquisitionOME(
-                files=files.query(f"well == '{well}'"),
-                ome_xml=ome_xml,
-                alignment=TileAlignmentOptions.STAGE_POSITION,
-                background_correction_matrices=None,
-                illumination_correction_matrices=None,
-                axes=["t", "c", "z", "y", "x"],
-                memmap=False,
-            )
+            if files.iloc[0]["path"].endswith(".ome.tif"):
+                worm_acquisition = RegionAcquisitionOME(
+                    files=files.query(f"well == '{well}'"),
+                    ome_xml=ome_xml,
+                    alignment=TileAlignmentOptions.STAGE_POSITION,
+                    background_correction_matrices=None,
+                    illumination_correction_matrices=None,
+                    axes=["t", "c", "z", "y", "x"],
+                    memmap=False,
+                )
+            elif files.iloc[0]["path"].endswith(".stk"):
+                RegionAcquisitionSTK(
+                    files=files.query(f"well == '{well}'"),
+                    alignment=TileAlignmentOptions.STAGE_POSITION,
+                    background_correction_matrices=None,
+                    illumination_correction_matrices=None,
+                    axes=["t", "c", "z", "y", "x"],
+                    memmap=False,
+                )
+            else:
+                logger.warning("Unknown file format.")
         else:
             worm_acquisition = CompressedTiff(
                 files=files.query(f"well == '{well}'"),
@@ -235,7 +247,7 @@ def parse_files(acquisition_dir: Union[Path, str]) -> pd.DataFrame:
     filename_re = re.compile(
         r"(?P<name>.*)_w(?P<channel>\d+)(?P<channel_name>.*)_s("
         r"?P<well>\d+)_t("
-        r"?P<time>\d+).(ome.tif|tif)"
+        r"?P<time>\d+).(ome.tif|tif|stk)"
     )
 
     files = []
