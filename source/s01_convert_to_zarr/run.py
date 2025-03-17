@@ -167,7 +167,7 @@ def main(config: ConvertToZarrConfig) -> None:
                     memmap=False,
                 )
             elif files.iloc[0]["path"].endswith(".stk"):
-                RegionAcquisitionSTK(
+                worm_acquisition = RegionAcquisitionSTK(
                     files=files.query(f"well == '{well}'"),
                     alignment=TileAlignmentOptions.STAGE_POSITION,
                     background_correction_matrices=None,
