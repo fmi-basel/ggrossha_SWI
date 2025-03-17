@@ -17,16 +17,50 @@ source_status = "python -m faim_ipa.pixi.src_status source"
 log_commit = {cmd = 'python -m faim_ipa.pixi.log_commit $TASK', env = {TASK = ""}}
 
 [tasks.config]
-cmd = "mkdir -p $WD ; TASK=BUILD_CONFIG pixi run log_commit ; cd $WD ; echo 'Implementation Missing.'"
-
+cmd = """
+mkdir -p $WD ;
+TASK=BUILD_CONFIG pixi run log_commit ;
+cd $WD ;
+python $PIXI_PROJECT_ROOT/source/build_config.py
+"""
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 
+[tasks.create_selection_csv]
+cmd = """
+TASK=CREATE_SELECTION_CSV pixi run log_commit ;
+cd $WD ;
+python $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/create_selection_csv.py
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
 
+[tasks.convert_to_zarr]
+cmd = """
+TASK=CONVERT_TO_ZARR pixi run log_commit ;
+cd $WD ;
+python $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/run.py --config s01_convert_to_zarr_config.yaml
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+
+[tasks.convert_to_zarr_slurm]
+cmd = """
+TASK=CONVERT_TO_ZARR_SLURM pixi run log_commit ;
+sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/slurm-job_convert-to-zarr.sh $ACCOUNT $WD
+"""
+env = { WD = "runs/example", ACCOUNT = ""}
+depends-on=["cache_status", "source_status"]
 
 [dependencies]
 python = "3.12.*"
-faim-ipa = ">=0.10.0,<0.11"
+faim-ipa = ">=0.13.0,<0.14"
+pandas = ">=2.2.3,<3"
+dask = ">=2025.2.0,<2026"
+numcodecs = ">=0.15.1,<0.16"
+ome-zarr = ">=0.10.3,<0.11"
+numpy = ">=2.2.3,<3"
+rich = ">=13.9.4,<14"
 
 [feature.docs.dependencies]
 mkdocs = ">=1.6.0,<2"
@@ -47,7 +81,6 @@ pre-commit = ">=3.1.1,<3.8"
 [feature.dev.tasks]
 install_hooks = "pre-commit install"
 lint = { cmd="pre-commit run --all-files", depends-on=["install_hooks"] }
-
 
 [feature.jupyter.dependencies]
 jupyter = ">=1.0.0,<1.1"
