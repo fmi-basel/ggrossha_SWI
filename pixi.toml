@@ -68,7 +68,6 @@ mkdocs-git-committers-plugin-2 = ">=2.3.0,<3"
 mkdocs-git-revision-date-localized-plugin = ">=1.2.6,<2"
 mkdocs-material = ">=9.5.31,<10"
 mkdocstrings = ">=0.25.2,<0.26"
-mkdocstrings-python = ">=1.10.7,<2"
 
 [feature.docs.tasks]
 clean_docs = "rm -rf site"
