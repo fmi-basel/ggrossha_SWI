@@ -104,6 +104,7 @@ class ConvertToZarrConfig(IPAConfig):
         output_dir = (
             get_git_root() / "processed_data" / raw_data_dir.name / "s01_zarr_data"
         )
+        output_dir.mkdir(exist_ok=True, parents=True)
 
         config = ConvertToZarrConfig(
             raw_data_dir=Path(raw_data_dir),
