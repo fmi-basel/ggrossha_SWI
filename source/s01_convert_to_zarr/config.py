@@ -36,10 +36,6 @@ class ConvertToZarrConfig(IPAConfig):
             "[s01]: Path to raw data directory:",
             default=str(loaded_config.raw_data_dir),
         ).ask()
-        output_dir = questionary.path(
-            "[s01]: Path to output directory:",
-            default=str(loaded_config.output_dir).replace("s01_zarr_data", ""),
-        ).ask()
         preview = questionary.confirm(
             "[s01]: Create preview?",
             default=loaded_config.preview,
@@ -104,7 +100,10 @@ class ConvertToZarrConfig(IPAConfig):
                 ).ask()
             )
 
-        output_dir = os.path.join(output_dir, "s01_zarr_data")
+        raw_data_dir = Path(raw_data_dir)
+        output_dir = (
+            get_git_root() / "processed_data" / raw_data_dir.name / "s01_zarr_data"
+        )
 
         config = ConvertToZarrConfig(
             raw_data_dir=Path(raw_data_dir),
