@@ -149,12 +149,14 @@ def main(config: ConvertToZarrConfig) -> None:
 
     outputs = []
     wells = sorted([int(w) for w in files["well"].unique()])
-    ome_xml = glob.glob(os.path.join(config.raw_data_dir, "*.companion.ome"))[0]
-    logger.info(f"Found ome-companion file: {ome_xml}")
     for well in tqdm(wells):
         logger.info(f"Processing well {well}...")
         if not config.legacy_compressed_tif:
             if files.iloc[0]["path"].endswith(".ome.tif"):
+                ome_xml = glob.glob(
+                    os.path.join(config.raw_data_dir, "*.companion.ome")
+                )[0]
+                logger.info(f"Found ome-companion file: {ome_xml}")
                 worm_acquisition = RegionAcquisitionOME(
                     files=files.query(f"well == '{well}'"),
                     ome_xml=ome_xml,
