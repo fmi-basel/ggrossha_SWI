@@ -91,9 +91,23 @@ lint = { cmd="pre-commit run --all-files", depends-on=["install_hooks"] }
 
 [feature.jupyter.dependencies]
 jupyter = ">=1.0.0,<1.1"
+napari = ">=0.5.0,<0.6"
+pyqt = ">=5.15.9,<6"
+ipyfilechooser = ">=0.6.0,<0.7"
 
 [feature.jupyter.tasks]
 jupyter = "jupyter lab"
+napari = "NAPARI_ASYNC=1 napari"
+
+[feature.jupyter.tasks.create_selection]
+cmd = """
+TASK=CREATE_SELECTION pixi run log_commit ;
+cp $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/Create_Selection.ipynb $WD ;
+cd $WD ;
+pixi run "jupyter lab" Create_Selection.ipynb
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
 
 [feature.nbdev.dependencies]
 nbdev = ">=2.2.10,<2.3"
