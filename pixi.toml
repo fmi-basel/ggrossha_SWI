@@ -111,6 +111,7 @@ depends-on=["cache_status", "source_status"]
 
 [feature.nbdev.dependencies]
 nbdev = ">=2.2.10,<2.3"
+setuptools = ">=75.8.2,<76"
 
 [feature.nbdev.tasks]
 clean = "nbdev_clean --clear_all"
