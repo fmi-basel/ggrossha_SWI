@@ -44,7 +44,7 @@ export VECLIB_MAXIMUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 export DASK_DISTRIBUTED__SCHEDULER__WORK_STEALING="False"
 
-MAIL="$mail_to" WD="$working_dir" pixi --no-lockfile-update run workflow_slurm
+MAIL="$mail_to" WD="$working_dir" pixi run --no-lockfile-update workflow_slurm
 
 ### END OF PUT YOUR CODE IN THIS SECTION
 
