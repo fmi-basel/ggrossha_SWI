@@ -239,7 +239,7 @@ def main(config: ConvertToZarrConfig) -> None:
 
 
 def get_time_chunk_size(is_preview: bool):
-    return 100 if is_preview else 10
+    return 100 if is_preview else 1
 
 
 def parse_files(acquisition_dir: Union[Path, str]) -> pd.DataFrame:
