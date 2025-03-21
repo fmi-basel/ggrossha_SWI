@@ -52,7 +52,7 @@ env = { WD = "runs/example", ACCOUNT = ""}
 depends-on=["cache_status", "source_status"]
 
 [tasks.submit_workflow]
-cmd = """TASK=SUBMIT_WORKFLOW run log_commit ;
+cmd = """TASK=SUBMIT_WORKFLOW pixi run log_commit ;
 sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/slurm-job_run-workflow.sh $ACCOUNT $MAIL $WD
 """
 env = { ACCOUNT = "", MAIL = "", WD = "runs/example"}
