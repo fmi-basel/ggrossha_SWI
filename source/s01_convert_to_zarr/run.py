@@ -154,6 +154,7 @@ def main(config: ConvertToZarrConfig) -> None:
 
     outputs = []
     wells = sorted([int(w) for w in files["well"].unique()])
+    logger.info(f"Converting positions: {wells}")
     for well in tqdm(wells):
         logger.info(f"Processing well {well}...")
         if not config.legacy_compressed_tif:

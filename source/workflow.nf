@@ -20,6 +20,7 @@ process PREPARE {
 
 process CONVERT2ZARR {
     label 'cpu'
+    memory { 12.GB * task.attempt}
 
     input:
     path convert_to_zarr_config
