@@ -94,7 +94,7 @@ pyqt = ">=5.15.9,<6"
 ipyfilechooser = ">=0.6.0,<0.7"
 
 [feature.jupyter.tasks]
-jupyter = "jupyter lab"
+jupyter = "NAPARI_ASYNC=1 jupyter lab"
 napari = "NAPARI_ASYNC=1 napari"
 
 [feature.jupyter.tasks.create_selection]
@@ -103,6 +103,16 @@ TASK=CREATE_SELECTION pixi run log_commit ;
 cp $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/Create_Selection.ipynb $WD ;
 cd $WD ;
 pixi run "jupyter lab" Create_Selection.ipynb
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+
+[feature.jupyter.tasks.visualize_raw]
+cmd = """
+TASK=VISUALIZE_RAW pixi run log_commit ;
+cp $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/Visualize-Raw-Data.ipynb $WD ;
+cd $WD ;
+pixi run "jupyter lab" Visualize-Raw-Data.ipynb
 """
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]

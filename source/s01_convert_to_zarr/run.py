@@ -146,7 +146,7 @@ def main(config: ConvertToZarrConfig) -> None:
         n_workers=4,
         threads_per_worker=1,
         processes=True,
-        memory_limit="16GB",
+        memory_limit="6GB",
         local_directory="./dask_tmp/",
     )
     logger.info(client.dashboard_link)

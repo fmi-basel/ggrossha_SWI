@@ -37,7 +37,7 @@ def get_experiment_widget(root_dir: Path = Path.cwd()):
     )
 
 
-def load_positions(exp, root_dir: Path = Path.cwd()):
+def load_positions(exp, root_dir: Path = Path.cwd(), from_input_dir: bool = True):
     """
     Load all worm positions for the selected experiment.
 
@@ -47,6 +47,9 @@ def load_positions(exp, root_dir: Path = Path.cwd()):
         The selected experiment.
     root_dir : Path
         The root directory of the experiments
+    from_input_dir : bool
+        Whether to load the positions from the input directory or processed
+        output directory.
 
     Returns
     -------
@@ -59,12 +62,21 @@ def load_positions(exp, root_dir: Path = Path.cwd()):
     try:
         config = ConvertToZarrConfig.load(exp.value / ConvertToZarrConfig.config_name())
         files = parse_files(config.raw_data_dir)
-        preview_dir = config.output_dir / "preview"
+        if from_input_dir:
+            load_dir = config.output_dir / "preview"
+            positions = sorted([int(p) for p in files["well"].unique()])
+            positions_zarr = [
+                load_dir / f"{files.iloc[0]["name"]}_s{p}.zarr" for p in positions
+            ]
+        else:
+            load_dir = config.output_dir
+            positions = sorted(
+                glob(str(config.output_dir / "*.zarr")),
+                key=lambda x: int(Path(x).name.split("_")[-1].split(".zarr")[0][1:]),
+            )
+            positions_zarr = [load_dir / f"{Path(p).name}" for p in positions]
 
-        positions = sorted([int(p) for p in files["well"].unique()])
-        return config, [
-            preview_dir / f"{files.iloc[0]["name"]}_s{p}.zarr" for p in positions
-        ]
+        return config, positions_zarr
     except FileNotFoundError:
         print("Selected experiment has no config file.")
 
