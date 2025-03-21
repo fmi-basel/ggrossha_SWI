@@ -129,6 +129,14 @@ nextflow run $PIXI_PROJECT_ROOT/source/workflow.nf --convert_to_zarr_config $(pw
 env = { WD = "runs/example", MAIL = ""}
 depends-on = ["cache_status", "source_status"]
 
+[feature.nextflow.tasks.clean_nf]
+cmd = """
+cd $WD ;
+nextflow clean -f
+"""
+env = { WD = "runs/example" }
+depends-on = ["cache_status"]
+
 [environments]
 docs = { features = ["docs"], solve-group="default" }
 dev = { features = ["dev"], solve-group="default" }
