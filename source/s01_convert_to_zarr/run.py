@@ -272,6 +272,7 @@ def parse_files(acquisition_dir: Union[Path, str]) -> pd.DataFrame:
                 row["time"] = int(row["time"])
                 row["X"] = 0
                 row["Y"] = 0
+                row["zarr_container"] = f'{row["name"]}_s{row["well"]}.zarr'
                 files.append(row)
 
     return pd.DataFrame(files)
@@ -295,10 +296,10 @@ def filter_files(files, selection_csv):
     """
     selection = pd.read_csv(selection_csv, index_col=False)
     positions = selection[selection["skip"] == False]["position"].values  # noqa
-    files = files[files["well"].isin([str(p) for p in positions])]
+    files = files[files["zarr_container"].isin([p for p in positions])]
     selected = []
     for pos in positions:
-        subset = files[files["well"] == str(pos)]
+        subset = files[files["zarr_container"] == str(pos)]
         start_t = selection[selection["position"] == pos]["start_t"].values[0]
         end_t = selection[selection["position"] == pos]["end_t"].values[0]
         subset = subset[subset["time"] >= start_t]
