@@ -28,7 +28,7 @@ def main(config: ConvertToZarrConfig):
 
     for i, chunk in enumerate(range(0, len(selection), chunk_size)):
         chunk_selection = selection.iloc[chunk : chunk + chunk_size]
-        selection_file = f"selection_{i}.csv"
+        selection_file = Path.cwd() / f"selection_{i}.csv"
         chunk_selection.to_csv(selection_file, index=False)
         config = config.model_copy()
         config.selection_csv = selection_file
