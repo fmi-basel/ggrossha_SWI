@@ -34,15 +34,6 @@ python $PIXI_PROJECT_ROOT/source/build_config.py
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 
-[tasks.create_selection_csv]
-cmd = """
-TASK=CREATE_SELECTION_CSV pixi run log_commit ;
-cd $WD ;
-python $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/create_selection_csv.py
-"""
-env = { WD = "runs/example"}
-depends-on=["cache_status", "source_status"]
-
 [tasks.convert_to_zarr]
 cmd = """
 TASK=CONVERT_TO_ZARR pixi run log_commit ;
@@ -58,6 +49,13 @@ TASK=CONVERT_TO_ZARR_SLURM pixi run log_commit ;
 sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/slurm-job_convert-to-zarr.sh $ACCOUNT $WD
 """
 env = { WD = "runs/example", ACCOUNT = ""}
+depends-on=["cache_status", "source_status"]
+
+[tasks.submit_workflow]
+cmd = """TASK=SUBMIT_WORKFLOW run log_commit ;
+sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/slurm-job_run-workflow.sh $ACCOUNT $MAIL $WD
+"""
+env = { ACCOUNT = "", MAIL = "", WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 
 [dependencies]
@@ -116,8 +114,24 @@ setuptools = ">=75.8.2,<76"
 [feature.nbdev.tasks]
 clean = "nbdev_clean --clear_all"
 
+[feature.nextflow.target.linux-64.dependencies]
+nextflow = ">=24.10.5,<25"
+
+[feature.nextflow]
+system-requirements = {linux="4.18"}
+
+[feature.nextflow.tasks.workflow_slurm]
+cmd = """
+TASK=WORKFLOW_SLURM pixi run log_commit ;
+cd $WD ;
+nextflow run $PIXI_PROJECT_ROOT/source/workflow.nf --convert_to_zarr_config $(pwd)/s01_convert_to_zarr_config.yaml --segmentation_config $(pwd)/s02_segmentation_config.yaml -profile slurm -with-report -resume -with-timeline -N $MAIL
+"""
+env = { WD = "runs/example", MAIL = ""}
+depends-on = ["cache_status", "source_status"]
+
 [environments]
 docs = { features = ["docs"], solve-group="default" }
 dev = { features = ["dev"], solve-group="default" }
 jupyter = { features = ["jupyter"], solve-group="default" }
 nbdev = { features = ["nbdev"], no-default-feature = true}
+nextflow = {features=["nextflow"], solve-group="default" }
