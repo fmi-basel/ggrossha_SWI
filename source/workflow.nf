@@ -14,7 +14,7 @@ process PREPARE {
 
     script:
     """
-    pixi run --no-lockfile-update python $baseDir/s01_convert_to_zarr/prepare.py --config $convert_to_zarr_config
+    pixi run --no-lockfile-update python $baseDir/s01_convert_to_zarr/prepare_parallel_run.py --config $convert_to_zarr_config
     """
 }
 
