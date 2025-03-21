@@ -14,7 +14,7 @@ process PREPARE {
 
     script:
     """
-    pixi run python $baseDir/s01_convert_to_zarr/prepare.py --config $convert_to_zarr_config
+    pixi --no-lockfile-update run python $baseDir/s01_convert_to_zarr/prepare.py --config $convert_to_zarr_config
     """
 }
 
@@ -29,7 +29,7 @@ process CONVERT2ZARR {
 
     script:
     """
-    pixi run python $baseDir/s01_convert_to_zarr/run.py --config $convert_to_zarr_config
+    pixi --no-lockfile-update run python $baseDir/s01_convert_to_zarr/run.py --config $convert_to_zarr_config
     """
 }
 
@@ -45,7 +45,7 @@ process SEGMENT {
 
     script:
     """
-    pixi run -e worm-segmentation python $baseDir/s02_segment/run.py --config $segmentation_config --inputs $inputs
+    pixi --no-lockfile-update run -e worm-segmentation python $baseDir/s02_segment/run.py --config $segmentation_config --inputs $inputs
     """
 }
 
