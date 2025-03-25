@@ -31,6 +31,7 @@ def main() -> None:
             questionary.press_any_key_to_continue(
                 "Press any key to continue to 's02_segment' config..."
             ).ask()
+        s01_convert_to_zarr = ConvertToZarrConfig.load()
         _ = SegmentationConfig.prompt(s01_convert_to_zarr)
 
 
