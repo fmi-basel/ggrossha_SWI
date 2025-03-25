@@ -65,7 +65,7 @@ class SegmentationConfig(IPAConfig):
 
         config = SegmentationConfig(
             data_dir=Path(data_dir),
-            output_dir=Path(output_dir / "s02_segment"),
+            output_dir=Path(output_dir) / "s02_segment",
             checkpoint=Path(model_checkpoint),
             brightfield_channel_index=brightfield_channel_index,
             batch_size=batch_size,
