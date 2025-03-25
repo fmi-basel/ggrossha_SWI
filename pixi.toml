@@ -156,9 +156,23 @@ opencv = ">=4.10.0,<4.11"
 ignite = "*"
 tensorboard = ">=2.17.0,<2.18"
 
-[feature.worm-segmentation.tasks]
-train_model = { cmd = "WD=$WD TASK=TRAIN_MODEL pixi run log_commit ; cd $WD ; pixi run python ../../source/s02_segment/train_network.py", env = { WD = "runs/example"}, depends-on=["source_status"] }
-proof_read_dataset = { cmd = "WD=$WD TASK=PROOF_READ_DATASET pixi run log_commit ; cd $WD ; pixi run python ../../source/s02_segment/proof_read_dataset.py", env = { WD = "runs/example"}, depends-on=["source_status"] }
+[feature.worm-segmentation.tasks.train_model]
+cmd = """
+TASK=TRAIN_MODEL pixi run log_commit ;
+cd $WD ;
+pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/train_network.py
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+
+[feature.worm-segmentation.tasks.proof_read_dataset]
+cmd = """
+TASK=PROOF_READ_DATASET pixi run log_commit ;
+cd $WD ;
+pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/proof_read_dataset.py
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
 
 [feature.micro-sam]
 channels = ["nvidia", "pytorch", "conda-forge"]
@@ -172,10 +186,29 @@ pyqt = ">=5.15.9,<6"
 lxml-html-clean = ">=0.4.1,<0.5"
 lxml = ">=4.9.2,<5"
 
-[feature.micro-sam.tasks]
-prepare_annotation_data = { cmd = "WD=$WD TASK=PREPARE_ANNOTATION_DATA pixi run log_commit ; cd $WD ; pixi run python ../../source/s02_segment/prepare_annotation_data.py", env = { WD = "runs/example"}, depends-on=["source_status"] }
-annotate_data = { cmd = "pixi run micro_sam.annotator_3d -i $TIFF -e $EMBEDDING", env = {TIFF = "", EMBEDDING = ""}}
-prepare_training_data = { cmd = "WD=$WD TASK=PREPARE_TRAINING_DATA pixi run log_commit ; cd $WD ; pixi run python ../../source/s02_segment/prepare_training_data.py", env = { WD = "runs/example"}, depends-on=["source_status"] }
+[feature.micro-sam.tasks.prepare_annotation_data]
+cmd = """
+TASK=PREPARE_ANNOTATION_DATA pixi run log_commit ;
+cd $WD ;
+pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_annotation_data.py
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+
+[feature.micro-sam.tasks.annotate_data]
+cmd = """
+pixi run micro_sam.annotator_3d -i $TIFF -e $EMBEDDING
+"""
+env = {TIFF = "", EMBEDDING = ""}
+
+[feature.micro-sam.tasks.prepare_training_data]
+cmd = """
+TASK=PREPARE_TRAINING_DATA pixi run log_commit ;
+cd $WD ;
+pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_training_data.py
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
 
 [feature.cuda]
 platforms = ["linux-64"]
@@ -183,9 +216,17 @@ platforms = ["linux-64"]
 [feature.cuda.dependencies]
 pytorch-cuda = {version="11.8.*", channel="pytorch"}
 
-[feature.cuda.tasks]
-segmentation_gpu = { cmd = "WD=$WD TASK=SEGMENTATION pixi run log_commit ; cd $WD ; pixi run python ../../source/s02_segment/run.py --config s02_segmentation_config.yaml --inputs s01_convert_to_zarr_result.yaml", env = { WD = "runs/example"}, depends-on=["source_status"] }
-check_cuda = 'python -c "import torch; print(torch.cuda.is_available())"'
+[feature.cuda.tasks.segmentation_gpu]
+cmd = """
+TASK=SEGMENTATION pixi run log_commit ;
+cd $WD ;
+pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/run.py --config s02_segmentation_config.yaml --inputs s01_convert_to_zarr_result.yaml
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+
+[feature.cuda.tasks.check_cuda]
+cmd = 'python -c "import torch; print(torch.cuda.is_available())"'
 
 
 [environments]
