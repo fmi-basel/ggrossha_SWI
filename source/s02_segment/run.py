@@ -63,7 +63,7 @@ def load_model(model_checkpoint: Union[Path, str]):
 
     model = WormSegmentationModule.load_from_checkpoint(model_checkpoint)
     model.eval()
-    # model = model.to("cuda")
+    model = model.to("cuda")
     return model
 
 
@@ -265,7 +265,7 @@ def parse_dirs(data_dir: Union[Path, str]) -> list[Path]:
 
 
 def predict(batch, model):
-    pred = model(batch).detach().cpu().numpy()
+    pred = model(batch.to(model.device)).detach().cpu().numpy()
     pred = np.clip(pred * 255, 0, 255).astype(np.uint8)
 
     return pred
