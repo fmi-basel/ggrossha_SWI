@@ -13,7 +13,7 @@ import sys
 from faim_ipa.utils import get_git_root
 
 sys.path.append(str(get_git_root()))
-from source.s02_segment.config import PrepareAnnotationDataConfig
+from source.s02_segment.annotation_data_config import PrepareAnnotationDataConfig
 
 
 def main(
