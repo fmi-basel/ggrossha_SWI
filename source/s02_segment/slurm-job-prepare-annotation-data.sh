@@ -11,12 +11,7 @@
 #SBATCH --gres=gpu:a40:1
 #SBATCH --constraint infiniband
 #SBATCH --time=12:00:00
-if [ -z "$1" ]; then
-        echo "[ERROR] [$(date -Iseconds)] [$$] SLURM account not provided."
-        exit 1
-fi
-account="$1"
-working_dir="$2"
+working_dir="$1"
 
 set -eu
 
