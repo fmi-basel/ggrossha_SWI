@@ -43,7 +43,7 @@ def main(
         logger.info("Extract raw data projections...")
         annotation_planes = []
         for i in tqdm(range(data.shape[0]), leave=False):
-            stack = data[i, config.brightfield_channel]
+            stack = data[i, config.brightfield_channel_index]
             idx = max(6, np.argmax(np.std(stack, axis=(1, 2))))
             annotation_planes.append(stack[idx - 6 : idx + 1].mean(0).astype(np.uint16))
 
