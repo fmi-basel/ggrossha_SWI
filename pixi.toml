@@ -58,6 +58,14 @@ sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/slurm-job_run-workflow.sh $A
 env = { ACCOUNT = "", MAIL = "", WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 
+[tasks.prepare_annotation_data_slurm]
+cmd = """
+TASK=PREPARE_ANNOTATION_DATA_SLURM pixi run log_commit ;
+sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-prepare-annotation-data.sh $ACCOUNT $WD
+"""
+env = { WD = "runs/example", ACCOUNT=""}
+depends_on=["cache_status", "source_status"]
+
 [dependencies]
 python = ">=3.12.9,<3.14"
 faim-ipa = ">=0.13.0,<0.14"
