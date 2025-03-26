@@ -63,7 +63,7 @@ cmd = """
 mkdir -p $WD ;
 TASK=BUILD_ANNOTATION_DATA_CONFIG pixi run log_commit ;
 cd $WD ;
-python $PIXI_PROJECT_ROOT/source/s02_segment/build_annotation_data_config.py
+python $PIXI_PROJECT_ROOT/source/s02_segment/annotation_data_config.py
 """
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
