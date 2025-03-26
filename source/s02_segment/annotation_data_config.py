@@ -62,7 +62,7 @@ class PrepareAnnotationDataConfig(IPAConfig):
             ).ask()
         )
         output_dir = Path(output_dir) / "annotation_data"
-        output_dir.mkdir(exist_ok=True)
+        output_dir.mkdir(exist_ok=True, parents=True)
 
         config = PrepareAnnotationDataConfig(
             zarr_data_dir=Path(zarr_data_dir),
