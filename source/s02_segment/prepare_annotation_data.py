@@ -13,11 +13,11 @@ import sys
 from faim_ipa.utils import get_git_root
 
 sys.path.append(str(get_git_root()))
-from source.s02_segment.config import PrepareTrainingDataConfig
+from source.s02_segment.config import PrepareAnnotationDataConfig
 
 
 def main(
-    config: PrepareTrainingDataConfig,
+    config: PrepareAnnotationDataConfig,
 ):
     logger = create_logger("prepare-annotation-data")
     logger.info("Config:")
@@ -63,5 +63,5 @@ def main(
 
 
 if __name__ == "__main__":
-    config = PrepareTrainingDataConfig.load()
+    config = PrepareAnnotationDataConfig.load()
     main(config)

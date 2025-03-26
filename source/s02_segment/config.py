@@ -78,7 +78,7 @@ class SegmentationConfig(IPAConfig):
         return config
 
 
-class PrepareTrainingDataConfig(IPAConfig):
+class PrepareAnnotationDataConfig(IPAConfig):
     zarr_data_dir: Path
     output_dir: Path
     base_name: str
@@ -90,7 +90,7 @@ class PrepareTrainingDataConfig(IPAConfig):
         return "prepare_training_data_config.yaml"
 
     @classmethod
-    def prompt(cls) -> "PrepareTrainingDataConfig":
+    def prompt(cls) -> "PrepareAnnotationDataConfig":
         try:
             loaded_config = cls.load()
         except FileNotFoundError:
@@ -134,7 +134,7 @@ class PrepareTrainingDataConfig(IPAConfig):
         output_dir = Path(output_dir) / "annotation_data"
         output_dir.mkdir(exist_ok=True)
 
-        config = PrepareTrainingDataConfig(
+        config = PrepareAnnotationDataConfig(
             zarr_data_dir=Path(zarr_data_dir),
             output_dir=output_dir,
             base_name=base_name,
