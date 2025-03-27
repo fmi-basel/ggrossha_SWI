@@ -36,10 +36,11 @@ dask.config.set({"logging.distributed": "error"})
 
 class ZarrDataset(Dataset):
     def __init__(self, zarr_container, brightfield_channel_index):
+        store = parse_url(zarr_container, mode="r").store
+        store.key_separator = "."
         self.zarr = zarr.open(
-            parse_url(zarr_container, mode="r").store,
+            store,
         )[0]
-        self.zarr.chunk_store.key_separator = "."
         self.shape = self.zarr.shape
         self.brightfield_channel_index = brightfield_channel_index
 
