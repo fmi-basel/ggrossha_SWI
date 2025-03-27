@@ -243,13 +243,11 @@ def run_worm_segmentation(
             logger.info(f"sum_pp.shape = {sum_pp.shape}")
             pp.append(sum_pp.persist())
 
-        store = parse_url(output_name, mode="w").store
-        store.key_separator = "."
         da.to_zarr(
             da.concatenate(pp, axis=0).rechunk(
                 (50, 1, 1, raw_shape[-2], raw_shape[-1])
             ),
-            store,
+            output_name,
             component="0",
             overwrite=True,
             write_empty_chunks=False,
