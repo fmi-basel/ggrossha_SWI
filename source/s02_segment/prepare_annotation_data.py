@@ -39,6 +39,7 @@ def main(
     for zarr_dir in tqdm(zarr_dirs):
         logger.info(f"Processing {zarr_dir}")
         data = zarr.Group(parse_url(zarr_dir, mode="r").store)[0]
+        data.chunk_store.key_separator = "."
 
         logger.info("Extract raw data projections...")
         annotation_planes = []
