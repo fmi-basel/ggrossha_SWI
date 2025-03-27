@@ -39,6 +39,7 @@ class ZarrDataset(Dataset):
         self.zarr = zarr.open(
             parse_url(zarr_container, mode="r").store,
         )[0]
+        self.zarr.chunk_store.key_separator = "."
         self.shape = self.zarr.shape
         self.brightfield_channel_index = brightfield_channel_index
 
@@ -248,7 +249,7 @@ def run_worm_segmentation(
             component="0",
             overwrite=True,
             write_empty_chunks=False,
-            dimension_separator="/",
+            dimension_separator=".",
             compute=True,
         )
     return output_name
