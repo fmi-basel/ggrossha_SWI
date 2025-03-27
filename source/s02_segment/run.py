@@ -148,12 +148,12 @@ def compute_focus_plane_and_qc(
     output_name = join(output_dir, "focus-planes", f"{name}-focus-planes.csv")
     if not exists(output_name):
         raw_data = da.from_zarr(
-            parse_url(zarr_container, mode="r").store,
+            zarr_container,
             component="0",
             chunks=(1, 1, 25, 1024, 1024),
         )
         post_processed = da.from_zarr(
-            parse_url(join(output_dir, name), mode="r").store,
+            join(output_dir, name),
             component="0",
             chunks=(1, 1, 1, 1024, 1024),
         )
@@ -241,11 +241,14 @@ def run_worm_segmentation(
 
             logger.info(f"sum_pp.shape = {sum_pp.shape}")
             pp.append(sum_pp.persist())
+
+        store = parse_url(output_name, mode="w").store
+        store.chunk_store.key_separator = "."
         da.to_zarr(
             da.concatenate(pp, axis=0).rechunk(
                 (50, 1, 1, raw_shape[-2], raw_shape[-1])
             ),
-            parse_url(output_name, mode="w").store,
+            store,
             component="0",
             overwrite=True,
             write_empty_chunks=False,
