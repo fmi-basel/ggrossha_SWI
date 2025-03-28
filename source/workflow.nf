@@ -52,8 +52,10 @@ process SEGMENT {
 workflow {
     configs = PREPARE(params.convert_to_zarr_config)
     zarrs = CONVERT2ZARR(configs.flatten())
-    segmentations = SEGMENT(
-        Channel.fromPath(params.segmentation_config, checkIfExists: true),
-        zarrs
-    )
+    if (new File(params.segmentation_config).exists()) {
+        segmentations = SEGMENT(
+            params.segmentation_config,
+            zarrs
+        )
+    }
 }
