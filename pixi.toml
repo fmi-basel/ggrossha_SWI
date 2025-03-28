@@ -153,7 +153,7 @@ system-requirements = {linux="4.18"}
 cmd = """
 TASK=WORKFLOW_SLURM pixi run log_commit ;
 cd $WD ;
-nextflow run $PIXI_PROJECT_ROOT/source/workflow.nf --convert_to_zarr_config $(pwd)/s01_convert_to_zarr_config.yaml --segmentation_config $(pwd)/s02_segmentation_config.yaml -profile slurm -with-report -resume -with-timeline -N $MAIL
+nextflow run $PIXI_PROJECT_ROOT/source/workflow.nf --convert_to_zarr_config $(pwd)/s01_convert_to_zarr_config.yaml --segmentation_config $(pwd)/s02_segmentation_config.yaml -profile slurm -with-report -resume -with-timeline -disable-jobs-cancellation -N $MAIL
 """
 env = { WD = "runs/example", MAIL = ""}
 depends-on = ["cache_status", "source_status"]
