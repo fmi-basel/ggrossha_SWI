@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 import questionary
 from faim_ipa.utils import IPAConfig, get_git_root
@@ -8,7 +9,7 @@ class TrainConfig(IPAConfig):
     train_data_zarr: Path
     val_data_zarr: Path
     output_dir: Path
-    checkpoint: Path
+    checkpoint: Optional[Path] = None
     max_epochs: int
     batch_size: int
     augment: bool
