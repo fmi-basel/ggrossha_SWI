@@ -88,15 +88,6 @@ env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 outputs = ["prepare_training_data_config.yaml"]
 
-[tasks.prepare_train_data]
-cmd = """
-TASK=PREPARE_TRAIN_DATA pixi run log_commit ;
-cd $WD ;
-python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_train_data.py
-"""
-env = { WD = "runs/example"}
-depends-on=["cache_status", "source_status"]
-
 [tasks.prepare_train_data_slurm]
 cmd = """
 TASK=PREPARE_TRAIN_DATA_SLURM pixi run log_commit ;
@@ -208,6 +199,15 @@ cmd = """
 TASK=TRAIN_MODEL pixi run log_commit ;
 cd $WD ;
 pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/train_network.py
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+
+[feature.worm-segmentation.tasks.prepare_train_data]
+cmd = """
+TASK=PREPARE_TRAIN_DATA pixi run log_commit ;
+cd $WD ;
+python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_train_data.py
 """
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]

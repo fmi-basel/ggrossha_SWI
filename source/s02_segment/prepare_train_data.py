@@ -17,6 +17,7 @@ import sys
 
 sys.path.append(str(get_git_root()))
 from source.s02_segment.train_data_config import TrainDataConfig
+from source.s02_segment.network import WormDataset
 
 
 def main(
@@ -204,7 +205,12 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
 
     proof_read_dir = config.output_dir / f"proof_read_{name}"
     proof_read_dir.mkdir(exist_ok=True)
-    visualize_sample(raw_data[0], seg_data[0], x.shape[0] - 1, proof_read_dir)
+    visualize_sample(
+        raw_data[0],
+        WormDataset.create_target(seg_data[0]),
+        x.shape[0] - 1,
+        proof_read_dir,
+    )
 
 
 def clean_segmentation_mask(seg_data: NDArray) -> NDArray:
