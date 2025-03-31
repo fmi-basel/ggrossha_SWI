@@ -33,7 +33,7 @@ echo "[INFO] [$STARTDATE] [$$] Working directory: $(pwd)"
 ### PUT YOUR CODE IN THIS SECTION
 export SBATCH_ACCOUNT="$account"
 
-WD="$working_dir" pixi run --no-lockfile-update prepare_training_data
+WD="$working_dir" pixi run --no-lockfile-update prepare_train_data
 
 ### END OF PUT YOUR CODE IN THIS SECTION
 
