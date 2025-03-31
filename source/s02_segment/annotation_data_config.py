@@ -17,7 +17,7 @@ class PrepareAnnotationDataConfig(IPAConfig):
 
     @staticmethod
     def config_name() -> str:
-        return "prepare_training_data_config.yaml"
+        return "prepare_annotation_data_config.yaml"
 
     @classmethod
     def prompt(cls) -> "PrepareAnnotationDataConfig":
