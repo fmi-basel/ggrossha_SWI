@@ -36,45 +36,31 @@ class ConvertToZarrConfig(IPAConfig):
             "[s01]: Path to raw data directory:",
             default=str(loaded_config.raw_data_dir),
         ).ask()
-        preview = questionary.confirm(
-            "[s01]: Create preview?",
-            default=loaded_config.preview,
-        ).ask()
 
-        channels = loaded_config.channels
-        bin = loaded_config.bin
-        mip = loaded_config.mip
         selection_csv = loaded_config.selection_csv
-        if preview:
-            channels = [
-                int(c)
-                for c in questionary.text(
-                    "[s01]: List channels to process (comma separated):",
-                    validate=lambda x: x.replace(",", "").isdigit(),
-                    default=",".join([str(c) for c in loaded_config.channels]),
-                )
-                .ask()
-                .split(",")
-            ]
-
-            bin = int(
-                questionary.text(
-                    "[s01]: YX bin factor:",
-                    validate=lambda x: x.isdigit() and int(x) >= 1,
-                    default=str(loaded_config.bin),
-                ).ask()
+        channels = [
+            int(c)
+            for c in questionary.text(
+                "[s01]: List channels to process (comma separated):",
+                validate=lambda x: x.replace(",", "").isdigit(),
+                default=",".join([str(c) for c in loaded_config.channels]),
             )
+            .ask()
+            .split(",")
+        ]
 
-            mip = questionary.confirm(
-                "[s01]: Create MIPs?",
-                default=loaded_config.mip,
+        bin = int(
+            questionary.text(
+                "[s01]: YX bin factor:",
+                validate=lambda x: x.isdigit() and int(x) >= 1,
+                default=str(loaded_config.bin),
             ).ask()
-        else:
-            selection_csv = questionary.path(
-                "[s01]: Path to selection.csv:",
-                validate=lambda x: os.path.isfile(x),
-                default=str(loaded_config.selection_csv),
-            ).ask()
+        )
+
+        mip = questionary.confirm(
+            "[s01]: Create MIPs?",
+            default=loaded_config.mip,
+        ).ask()
 
         legacy_compressed_tiff = questionary.confirm(
             "[s01]: Convert legacy compressed TIFF format?",
@@ -109,7 +95,7 @@ class ConvertToZarrConfig(IPAConfig):
         config = ConvertToZarrConfig(
             raw_data_dir=Path(raw_data_dir),
             output_dir=Path(output_dir),
-            preview=preview,
+            preview=True,
             channels=channels,
             bin=bin,
             mip=mip,
