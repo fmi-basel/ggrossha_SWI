@@ -85,6 +85,7 @@ def main(
                         y_zarr_container=val_y_zarr,
                         raw_data=raw_zarr[i : i + 1, config.brightfield_channel],
                         seg_data=annotated_plane,
+                        name="val",
                     )
                 else:
                     add_to_zarr(
@@ -92,6 +93,7 @@ def main(
                         y_zarr_container=train_y_zarr,
                         raw_data=raw_zarr[i : i + 1, config.brightfield_channel],
                         seg_data=annotated_plane,
+                        name="train",
                     )
 
     logger.info("Done.")
@@ -158,7 +160,7 @@ def visualize_sample(x, y, i, output_dir):
     plt.close(fig)
 
 
-def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data):
+def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
     """
     Add data to the zarr container.
 
@@ -200,9 +202,9 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data):
         x[0] = raw_data[0]
         y[0] = seg_data[0]
 
-    proof_read_dir = config.output_dir / "proof_read"
+    proof_read_dir = config.output_dir / f"proof_read_{name}"
     proof_read_dir.mkdir(exist_ok=True)
-    visualize_sample(raw_data, seg_data, x.shape[0] - 1, proof_read_dir)
+    visualize_sample(raw_data[0], seg_data[0], x.shape[0] - 1, proof_read_dir)
 
 
 def clean_segmentation_mask(seg_data: NDArray) -> NDArray:
