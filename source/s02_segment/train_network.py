@@ -76,4 +76,4 @@ def main(config: TrainConfig):
 if __name__ == "__main__":
     config = TrainConfig.load()
 
-    main(**config["train_network"])
+    main(config)
