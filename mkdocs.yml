@@ -3,6 +3,8 @@ site_name: Single Worm Imaging - Analysis Template
 # repo_url: TO-DO
 # repo_name: TO-DO
 copyright: Copyright &copy; 2025, Friedrich Miescher Institute for Biomedical Research (FMI), Basel (Switzerland)
+extra_css:
+  - css/extra.css
 nav:
   - Home: index.md
   - Installation: installation.md
@@ -10,7 +12,8 @@ nav:
   - Tutorial:
     - 'Tutorials': tutorial/tutorials.md
   - 'How-to Guide':
-    - 'Guides': how_to/guides.md
+    - 'Run Workflow': how_to/run_workflow.md
+    - 'Train Segmentation Model': how_to/train_network.md
   - Explanation:
     - 'Explanations': explanation/explanations.md
   - References:
@@ -63,10 +66,22 @@ plugins:
 #   - git-committers:
 #       repository: TO-DO
 #       branch: main
+  - user-defined-values:
+      keywords:
+        DATASET:
+          placeholder: dataset-name
+        SLURM_ACCOUNT:
+          placeholder: slurm-account
+        MAIL_TO:
+            placeholder: first.last@mail.me
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span

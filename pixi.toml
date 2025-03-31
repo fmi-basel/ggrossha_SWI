@@ -32,6 +32,7 @@ cd $WD ;
 python $PIXI_PROJECT_ROOT/source/build_config.py
 """
 env = { WD = "runs/example"}
+outputs = ["s01_convert_to_zarr_config.yaml"]
 depends-on=["cache_status", "source_status"]
 
 [tasks.convert_to_zarr]
@@ -49,7 +50,7 @@ TASK=CONVERT_TO_ZARR_SLURM pixi run log_commit ;
 sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/slurm-job_convert-to-zarr.sh $ACCOUNT $WD
 """
 env = { WD = "runs/example", ACCOUNT = ""}
-depends-on=["cache_status", "source_status"]
+depends-on=["config", "cache_status", "source_status"]
 
 [tasks.submit_workflow]
 cmd = """TASK=SUBMIT_WORKFLOW pixi run log_commit ;
@@ -131,6 +132,9 @@ mkdocs-git-committers-plugin-2 = ">=2.3.0,<3"
 mkdocs-git-revision-date-localized-plugin = ">=1.2.6,<2"
 mkdocs-material = ">=9.5.31,<10"
 mkdocstrings = ">=0.25.2,<0.26"
+
+[feature.docs.pypi-dependencies]
+mkdocs-user-defined-values = ">=0.0.5, <0.0.6"
 
 [feature.docs.tasks]
 clean_docs = "rm -rf site"

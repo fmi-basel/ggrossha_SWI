@@ -1782,6 +1782,8 @@ environments:
     - url: https://conda.anaconda.org/conda-forge/
     - url: https://conda.anaconda.org/pytorch/
     - url: https://conda.anaconda.org/bioconda/
+    indexes:
+    - https://pypi.org/simple
     packages:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -2031,6 +2033,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-ng-2.2.4-h7955e40_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py312h66e93f0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb8e6e7a_2.conda
+      - pypi: https://files.pythonhosted.org/packages/6e/6d/87863549ec07371ad0c36e53f1ae39b595f93d7bdc776a20fdc0becee23d/mkdocs_user_defined_values-0.0.5-py3-none-any.whl
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.6.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/aiohttp-3.11.14-py312h3520af0_0.conda
@@ -2268,6 +2271,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zlib-ng-2.2.4-h04d1b7c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zstandard-0.23.0-py312h01d7ebd_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zstd-1.5.7-h8210216_2.conda
+      - pypi: https://files.pythonhosted.org/packages/6e/6d/87863549ec07371ad0c36e53f1ae39b595f93d7bdc776a20fdc0becee23d/mkdocs_user_defined_values-0.0.5-py3-none-any.whl
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.6.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.11.14-py312h998013c_0.conda
@@ -2505,6 +2509,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-ng-2.2.4-h13dfb9a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py312hea69d52_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-h6491c7d_2.conda
+      - pypi: https://files.pythonhosted.org/packages/6e/6d/87863549ec07371ad0c36e53f1ae39b595f93d7bdc776a20fdc0becee23d/mkdocs_user_defined_values-0.0.5-py3-none-any.whl
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/_libavif_api-1.2.1-h57928b3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/_openmp_mutex-4.5-2_gnu.conda
@@ -2732,6 +2737,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/zlib-ng-2.2.4-hbb528cf_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/zstandard-0.23.0-py312h4389bb4_1.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-hbeecb71_2.conda
+      - pypi: https://files.pythonhosted.org/packages/6e/6d/87863549ec07371ad0c36e53f1ae39b595f93d7bdc776a20fdc0becee23d/mkdocs_user_defined_values-0.0.5-py3-none-any.whl
   jupyter:
     channels:
     - url: https://conda.anaconda.org/nvidia/
@@ -18395,6 +18401,13 @@ packages:
   license_family: MIT
   size: 16122
   timestamp: 1734641109286
+- pypi: https://files.pythonhosted.org/packages/6e/6d/87863549ec07371ad0c36e53f1ae39b595f93d7bdc776a20fdc0becee23d/mkdocs_user_defined_values-0.0.5-py3-none-any.whl
+  name: mkdocs-user-defined-values
+  version: 0.0.5
+  sha256: 73fc60c19e5ba20aeaa2c83cea155dda8dd298ff75d748165a39bada721b2717
+  requires_dist:
+  - mkdocs>=1.0.4
+  requires_python: '>=3,<4'
 - conda: https://conda.anaconda.org/conda-forge/noarch/mkdocstrings-0.25.2-pyhd8ed1ab_0.conda
   sha256: a270e0dd6c432cde6d2faebd89fee15087aebc098ecd955945dcab04cbab361a
   md5: 9bde0b8335c9c3eecdc99ced61a02786
