@@ -100,7 +100,7 @@ depends-on=["cache_status", "source_status"]
 [tasks.prepare_train_data_slurm]
 cmd = """
 TASK=PREPARE_TRAIN_DATA_SLURM pixi run log_commit ;
-sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-prepare-train-data.sh $WD
+sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-prepare-train-data.sh $ACCOUNT $WD
 """
 env = { WD = "runs/example", ACCOUNT=""}
 depends-on=["cache_status", "source_status", "prepare_annotation_data_config"]
