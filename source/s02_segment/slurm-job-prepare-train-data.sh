@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=Prepare-Annotation-Data
+#SBATCH --job-name=Prepare-Train-Data
 #SBATCH --cpus-per-task=2
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
@@ -8,10 +8,10 @@
 #SBATCH --error=slurm_output/run-%j.err
 #SBATCH --partition=main
 #SBATCH --mem=8GB
-#SBATCH --gres=gpu:a40:1
 #SBATCH --constraint infiniband
 #SBATCH --time=12:00:00
-working_dir="$1"
+account="$1"
+working_dir="$2"
 
 set -eu
 
@@ -31,8 +31,9 @@ echo "[INFO] [$STARTDATE] [$$] Running in $(hostname -s)"
 echo "[INFO] [$STARTDATE] [$$] Working directory: $(pwd)"
 
 ### PUT YOUR CODE IN THIS SECTION
+export SBATCH_ACCOUNT="$account"
 
-WD="$working_dir" pixi run --no-lockfile-update prepare_annotation_data
+WD="$working_dir" pixi run --no-lockfile-update prepare_training_data
 
 ### END OF PUT YOUR CODE IN THIS SECTION
 

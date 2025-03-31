@@ -77,6 +77,34 @@ sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-prepar
 env = { WD = "runs/example", ACCOUNT=""}
 depends-on=["cache_status", "source_status", "prepare_annotation_data_config"]
 
+[tasks.prepare_train_data_config]
+cmd = """
+mkdir -p $WD ;
+TASK=BUILD_TRAIN_DATA_CONFIG pixi run log_commit ;
+cd $WD ;
+python $PIXI_PROJECT_ROOT/source/s02_segment/train_data_config.py
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+outputs = ["prepare_training_data_config.yaml"]
+
+[feature.tasks.prepare_train_data]
+cmd = """
+TASK=PREPARE_TRAIN_DATA pixi run log_commit ;
+cd $WD ;
+python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_train_data.py
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+
+[tasks.prepare_train_data_slurm]
+cmd = """
+TASK=PREPARE_TRAIN_DATA_SLURM pixi run log_commit ;
+sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-prepare-train-data.sh $WD
+"""
+env = { WD = "runs/example", ACCOUNT=""}
+depends-on=["cache_status", "source_status", "prepare_annotation_data_config"]
+
 [dependencies]
 python = ">=3.12.9,<3.14"
 faim-ipa = ">=0.13.0,<0.14"
@@ -184,15 +212,6 @@ pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/train_network.py
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 
-[feature.worm-segmentation.tasks.proof_read_dataset]
-cmd = """
-TASK=PROOF_READ_DATASET pixi run log_commit ;
-cd $WD ;
-pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/proof_read_dataset.py
-"""
-env = { WD = "runs/example"}
-depends-on=["cache_status", "source_status"]
-
 [feature.micro-sam]
 channels = ["nvidia", "pytorch", "conda-forge"]
 system-requirements = {linux="4.18"}
@@ -228,15 +247,6 @@ cmd = """
 pixi run micro_sam.annotator_3d -i $TIFF -e $EMBEDDING
 """
 env = {TIFF = "", EMBEDDING = ""}
-
-[feature.micro-sam.tasks.prepare_training_data]
-cmd = """
-TASK=PREPARE_TRAINING_DATA pixi run log_commit ;
-cd $WD ;
-pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_training_data.py
-"""
-env = { WD = "runs/example"}
-depends-on=["cache_status", "source_status"]
 
 [feature.cuda]
 platforms = ["linux-64"]
