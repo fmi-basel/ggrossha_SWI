@@ -30,7 +30,7 @@ class TrainConfig(IPAConfig):
                 train_data_zarr=get_git_root() / "processed_data",
                 val_data_zarr=get_git_root() / "processed_data",
                 output_dir=get_git_root() / "processed_data",
-                checkpoint=get_git_root() / "processed_data",
+                checkpoint="",
                 max_epochs=100,
                 batch_size=12,
                 augment=True,
@@ -59,28 +59,26 @@ class TrainConfig(IPAConfig):
         max_epochs = int(
             questionary.text(
                 "Max epochs:",
-                default=str(loaded_config["max_epochs"]) if loaded_config else "100",
+                default=str(loaded_config.max_epochs),
                 validate=lambda x: x.isdigit() and int(x) > 0,
             ).ask()
         )
         batch_size = int(
             questionary.text(
                 "Batch size:",
-                default=str(loaded_config["batch_size"]) if loaded_config else "12",
+                default=str(loaded_config.batch_size),
                 validate=lambda x: x.isdigit() and int(x) > 0,
             ).ask()
         )
         augment = questionary.confirm(
-            "Augment data:", default=loaded_config["augment"] if loaded_config else True
+            "Augment data:", default=loaded_config.augment
         ).ask()
         patch_size = tuple(
             map(
                 int,
                 questionary.text(
                     "Patch size:",
-                    default=", ".join(map(str, loaded_config["patch_size"]))
-                    if loaded_config
-                    else "1024, 1024",
+                    default=", ".join(map(str, loaded_config.patch_size)),
                     validate=lambda x: all(map(lambda y: y.isdigit(), x.split(", "))),
                 )
                 .ask()
@@ -90,14 +88,14 @@ class TrainConfig(IPAConfig):
         depth = int(
             questionary.text(
                 "Depth:",
-                default=str(loaded_config["depth"]) if loaded_config else "4",
+                default=str(loaded_config.depth),
                 validate=lambda x: x.isdigit() and int(x) > 0,
             ).ask()
         )
         lr = float(
             questionary.text(
                 "Learning rate:",
-                default=str(loaded_config["lr"]) if loaded_config else "0.0004",
+                default=str(loaded_config.lr),
                 validate=lambda x: x.replace(".", "", 1).isdigit(),
             ).ask()
         )
@@ -106,9 +104,7 @@ class TrainConfig(IPAConfig):
                 int,
                 questionary.text(
                     "Zero pad z:",
-                    default=", ".join(map(str, loaded_config["zero_pad_z"]))
-                    if loaded_config
-                    else "0, 0",
+                    default=", ".join(map(str, loaded_config.zero_pad_z)),
                     validate=lambda x: all(map(lambda y: y.isdigit(), x.split(", "))),
                 )
                 .ask()
