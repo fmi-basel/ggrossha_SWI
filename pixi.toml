@@ -110,7 +110,7 @@ outputs = ["train_config.yaml"]
 [tasks.train_network_slurm]
 cmd = """
 TASK=TRAIN_NETWORK_SLURM pixi run log_commit ;
-sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-prepare-train-network.sh $ACCOUNT $WD
+sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-train-network.sh $ACCOUNT $WD
 """
 env = { WD = "runs/example", ACCOUNT=""}
 depends-on=["cache_status", "source_status", "train_config"]
