@@ -35,11 +35,13 @@ def main(
         logger.info("Will append to this container.")
         train_store = parse_url(train_data_path, mode="a").store
         train_store.key_separator = "."
+        train_store._dimension_separator = "."
         train_data_zarr = zarr.group(train_store)
         train_x_zarr = train_data_zarr["x"]
         train_y_zarr = train_data_zarr["y"]
         val_store = parse_url(val_data_path, mode="a").store
         val_store.key_separator = "."
+        val_store._dimension_separator = "."
         val_data_zarr = zarr.group(val_store)
         val_x_zarr = val_data_zarr["x"]
         val_y_zarr = val_data_zarr["y"]
@@ -47,11 +49,13 @@ def main(
         logger.info(f"Creating a new training data container at {train_data_path}.")
         train_store = parse_url(train_data_path, mode="w").store
         train_store.key_separator = "."
+        train_store._dimension_separator = "."
         train_data_zarr = zarr.group(train_store)
         train_x_zarr = train_data_zarr.create_group("x")
         train_y_zarr = train_data_zarr.create_group("y")
         val_store = parse_url(val_data_path, mode="w").store
         val_store.key_separator = "."
+        val_store._dimension_separator = "."
         val_data_zarr = zarr.group(val_store)
         val_x_zarr = val_data_zarr.create_group("x")
         val_y_zarr = val_data_zarr.create_group("y")
