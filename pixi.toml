@@ -88,7 +88,7 @@ env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 outputs = ["prepare_training_data_config.yaml"]
 
-[feature.tasks.prepare_train_data]
+[tasks.prepare_train_data]
 cmd = """
 TASK=PREPARE_TRAIN_DATA pixi run log_commit ;
 cd $WD ;
