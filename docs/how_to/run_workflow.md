@@ -25,6 +25,11 @@ cd raw_data
 ln -s /path/to/raw/data/dataset
 ```
 
+After linking the dataset we want to change back to the repository root with:
+```commandline
+cd ..
+```
+
 Please fill out the following form with the appropriate values:
 
 {{{user-defined-values}}}
@@ -46,9 +51,17 @@ This step is about manually reviewing your microscopy experiment to annotate **h
 !!! warning "Local Processing"
     This step is done from the local computer.
 
-```commandline
-WD=runs/DATASET pixi run create_selection
-```
+=== "Linux and macOS"
+
+    ```bash
+    WD=runs/DATASET pixi run create_selection
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    $env:WD='runs/DATASET'; pixi run create_selection
+    ```
 
 ??? info "Step-by-Step Instructions"
 

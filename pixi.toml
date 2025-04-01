@@ -160,6 +160,7 @@ napari = "NAPARI_ASYNC=1 napari"
 
 [feature.jupyter.tasks.create_selection]
 cmd = """
+mkdir -p $WD ;
 TASK=CREATE_SELECTION pixi run log_commit ;
 cp $PIXI_PROJECT_ROOT/source/s01_convert_to_zarr/Create_Selection.ipynb $WD ;
 cd $WD ;
