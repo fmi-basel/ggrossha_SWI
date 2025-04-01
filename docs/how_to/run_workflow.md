@@ -56,9 +56,18 @@ WD=runs/DATASET pixi run create_selection
 
     Navigate to your project folder:
 
-    ```bash
-    cd <path_in_your_computer_to>/ggrossha_SWI-Template
-    ```
+    === "Linux and macOS"
+
+        ```bash
+        cd <path_in_your_computer_to>/ggrossha_SWI-Template
+        ```
+
+    === "Windows (PowerShell)"
+
+        ```powershell
+        cd <path_in_your_computer_to>\ggrossha_SWI-Template
+        ```
+
     Replace <path_in_your_computer_to> with the full path to the location where you cloned the ggrossha_SWI-Template repository.
 
     ---
@@ -69,9 +78,17 @@ WD=runs/DATASET pixi run create_selection
 
     Run the following command in your terminal, replacing `<your_experiment_name>` with the name you chose:
 
-    ```bash
-    WD=runs/DATASET pixi run create_selection
-    ```
+    === "Linux and macOS"
+
+        ```bash
+        WD=runs/DATASET pixi run create_selection
+        ```
+
+    === "Windows (PowerShell)"
+
+        ```powershell
+        $env:WD='runs/DATASET'; pixi run create_selection
+        ```
 
     **Example**: If your experiment is called `20250101_GeneX`, you would run:
     `WD=runs/20250101_GeneX pixi run create_selection`

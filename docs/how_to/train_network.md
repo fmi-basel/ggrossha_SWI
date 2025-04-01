@@ -39,9 +39,18 @@ This will create outputs in `processed_data/DATASET/annotation_data`:
 ## 2. Annotate the data [Local]
 For annotating the data we use [micro-sam](https://github.com/computational-cell-analytics/micro-sam). To start the annotator run the following command:
 
-```commandline
-TIFF=/path/to/processed_data/DATASET/annotation_data/....tif EMBEDDING=/path/to/processed_data/DATASET/annotation_data/...-embedding.zarr pixi run annotate_data
-```
+=== "Linux and macOS"
+
+    ```commandline
+    TIFF=/path/to/processed_data/DATASET/annotation_data/....tif EMBEDDING=/path/to/processed_data/DATASET/annotation_data/...-embedding.zarr pixi run annotate_data
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```commandline
+    $env:TIFF='/path/to/processed_data/DATASET/annotation_data/....tif'; $env:EMBEDDING='/path/to/processed_data/DATASET/annotation_data/...-embedding.zarr'; pixi run annotate_data
+    ```
+
 
 Once you are done, save the `committed_objects` into the `processed_data/DATASET/annotation_data/` directory, next to the input `.tif` (e.g. `worm_1_s1.tif`) with the same name and the suffix `-SEG` e.g. `worm_1_s1-SEG.tif`.
 
