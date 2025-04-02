@@ -21,13 +21,7 @@ We want to keep track of which raw data was used as part of this project. To fac
     This step is done from the SLURM head node.
 
 ```commandline
-cd raw_data
-ln -s /path/to/raw/data/dataset
-```
-
-After linking the dataset we want to change back to the repository root with:
-```commandline
-cd ..
+DATASET=/path/to/raw_data pixi run link_dataset
 ```
 
 Please fill out the following form with the appropriate values:

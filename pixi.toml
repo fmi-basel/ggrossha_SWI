@@ -19,8 +19,7 @@ log_commit = {cmd = 'python -m faim_ipa.pixi.log_commit $TASK', env = {TASK = ""
 [tasks.link_dataset]
 cmd = """
 cd raw_data ;
-ln -s $DATASET ;
-
+ln -s $(realpath -s --relative-to="." "$DATASET") ;
 """
 env = { DATASET = ""}
 
