@@ -20,8 +20,15 @@ We want to keep track of which raw data was used as part of this project. To fac
 !!! warning "SLURM"
     This step is done from the SLURM head node.
 
+Initialize the shell:
+
 ```commandline
-DATASET=/path/to/raw_data pixi run link_dataset
+source init.sh
+```
+
+Link the acquisition data:
+```commandline
+ACQUIRED_DATA=/path/to/raw_data pixi run link_dataset
 ```
 
 Please fill out the following form with the appropriate values:
@@ -35,7 +42,6 @@ Please fill out the following form with the appropriate values:
 The preview is a reduced representation of the raw data. It is used to pre-select the data that will be used for the analysis.
 
 ```commandline
-source init.sh
 WD=runs/DATASET ACCOUNT=SLURM_ACCOUNT pixi run convert_to_zarr_slurm
 ```
 
@@ -189,5 +195,5 @@ Once a selection has been made, the workflow can be run. The workflow will conve
     ```
 
 ```commandline
-WD=runs/DATASET ACCOUNT=SLURM_ACCOUNT MAIL=MAIL_TO pixi run submit_workflow_slurm
+WD=runs/DATASET ACCOUNT=SLURM_ACCOUNT MAIL=MAIL_TO pixi run submit_workflow
 ```
