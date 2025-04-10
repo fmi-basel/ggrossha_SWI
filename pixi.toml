@@ -272,8 +272,12 @@ env = {TIFF = "", EMBEDDING = ""}
 [feature.cuda]
 platforms = ["linux-64"]
 
+[feature.cuda.system-requirements]
+cuda="12.0"
+
 [feature.cuda.dependencies]
-pytorch-cuda = {version="12.4.*"}
+cuda-toolkit = {version="12.6.*"}
+pytorch-gpu = {version="2.6.*"}
 
 [feature.cuda.tasks.segmentation_gpu]
 cmd = """
@@ -286,7 +290,6 @@ depends-on=["cache_status", "source_status"]
 
 [feature.cuda.tasks.check_cuda]
 cmd = 'python -c "import torch; print(torch.cuda.is_available())"'
-
 
 [environments]
 docs = { features = ["docs"], solve-group="default" }
