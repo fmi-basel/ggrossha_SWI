@@ -39,7 +39,7 @@ def main(config: SegmentationConfig, datasets: list[dict[str, str]]):
         output_path = output_dir / f"{Path(raw_path).stem}_measurements.csv"
         logger.info(f"Saving measurements to {output_path}")
         measurements.to_csv(output_path, index=False)
-        measurement_files.append(output_path)
+        measurement_files.append(str(output_path))
 
     with open("measurement_files.yaml", "w") as f:
         yaml.safe_dump(measurement_files, f, sort_keys=False)
