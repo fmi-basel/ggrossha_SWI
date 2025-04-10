@@ -29,8 +29,10 @@ class WormDataset(Dataset):
         shuffle: bool = True,
         zero_pad_z: tuple[int, int] = (0, 0),
     ):
-        self.zarr_x = zarr.group(parse_url(zarr_file, mode="r").store)["x"]["0"]
-        self.zarr_y = zarr.group(parse_url(zarr_file, mode="r").store)["y"]["0"]
+        store = parse_url(zarr_file, mode="r").store
+        store.key_separator = "."
+        self.zarr_x = zarr.group(store)["x"]["0"]
+        self.zarr_y = zarr.group(store)["y"]["0"]
         self.patches = self.select_patches(
             patch_size, overlap, augment, shuffle=shuffle
         )
