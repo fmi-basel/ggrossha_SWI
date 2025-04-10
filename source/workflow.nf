@@ -49,6 +49,22 @@ process SEGMENT {
     """
 }
 
+process MEASURE {
+    label 'cpu_tiny'
+
+    input:
+    path segmentation_config
+    path inputs
+
+    output:
+    path "measurement_files.yaml"
+
+    script:
+    """
+    pixi run --no-lockfile-update -e worm-segmentation python $baseDir/s03_measure/run.py --config $segmentation_config --datasets $inputs
+    """
+}
+
 workflow {
     configs = PREPARE(params.convert_to_zarr_config)
     zarrs = CONVERT2ZARR(configs.flatten())
@@ -56,6 +72,10 @@ workflow {
         segmentations = SEGMENT(
             params.segmentation_config,
             zarrs
+        )
+        MEASURE(
+            params.segmentation_config,
+            segmentations
         )
     }
 }
