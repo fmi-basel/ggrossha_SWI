@@ -197,3 +197,18 @@ Once a selection has been made, the workflow can be run. The workflow will conve
 ```commandline
 WD=runs/DATASET ACCOUNT=SLURM_ACCOUNT MAIL=MAIL_TO pixi run submit_workflow
 ```
+
+## Plot Results [Local]
+A jupyter notebook is provided to visualize the results.
+
+=== "Linux and macOS"
+
+    ```bash
+    WD=runs/DATASET pixi run plot
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    $env:WD='runs/DATASET'; pixi run plot
+    ```
