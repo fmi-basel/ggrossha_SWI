@@ -22,6 +22,7 @@ def main(config: SegmentationConfig, measurement_files: list[Path]):
     logger.info(pretty_repr(measurement_files))
 
     output_dir = config.output_dir.parent / "s03_measurements" / "quality-control"
+    output_dir.mkdir(parents=True, exist_ok=True)
     create_qc_plots(output_dir, measurement_file)
     logger.info("Done.")
 
