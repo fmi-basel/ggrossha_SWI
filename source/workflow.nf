@@ -65,6 +65,19 @@ process MEASURE {
     """
 }
 
+process QC {
+    label 'cpu_tiny'
+
+    input:
+    path segmentation_config
+    path inputs, name: 'measurement_files??.yaml'
+
+    script:
+    """
+    pixi run --no-lockfile-update python $baseDir/s03_measure/qc.py --config $segmentation_config --measurement_files $inputs
+    """
+}
+
 workflow {
     configs = PREPARE(params.convert_to_zarr_config)
     zarrs = CONVERT2ZARR(configs.flatten())
@@ -76,6 +89,10 @@ workflow {
         MEASURE(
             params.segmentation_config,
             segmentations
+        )
+        QC(
+            params.segmentation_config,
+            measurements.collect()
         )
     }
 }
