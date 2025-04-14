@@ -23,7 +23,7 @@ def main(config: SegmentationConfig, measurement_files: list[Path]):
 
     output_dir = config.output_dir.parent / "s03_measurements" / "quality-control"
     output_dir.mkdir(parents=True, exist_ok=True)
-    create_qc_plots(output_dir, measurement_file)
+    create_qc_plots(output_dir, measurement_files)
     logger.info("Done.")
 
 
@@ -77,7 +77,7 @@ def create_segmentation_quality_overview(
     missing_segmentations = []
     for df, _ in dfs:
         missing_segmentations.append(
-            (df.iloc[0]["id"], df.isnull().sum()["focus_plane"], len(df))
+            (df.iloc[0]["id"], df.isnull().sum()["length"], len(df))
         )
 
     missing_segmentations = pd.DataFrame(
@@ -92,15 +92,9 @@ def create_segmentation_quality_overview(
 
     plt.figure(figsize=(12, 4))
     plt.bar(missing_segmentations["id"], bad_frames_perc, color=color)
-    x_start, x_end = (
-        int(missing_segmentations["id"].min()),
-        int(missing_segmentations["id"].max() + 1),
-    )
-    plt.plot([x_start - 0.5, x_end + 0.5], [10, 10], "--", color="red")
-    plt.xticks(range(x_start, x_end, 5))
-    plt.yticks(range(0, 101, 10))
+    plt.xticks(rotation=-90, ha="center", va="top", fontsize=10)
+    plt.axhline(y=10, linestyle="--", color="red")
     plt.ylim([0, 100])
-    plt.xlim([x_start - 0.5, x_end + 0.5])
     plt.xlabel("Worm ID")
     plt.ylabel("Missing Segmentation [%]")
     plt.suptitle("Segmentation Quality Overview")
@@ -153,7 +147,7 @@ def create_measurements_overview(
     ax2.plot(df["time"], df["percentile.05_intensity"], "-", alpha=0.2, color="black")
     ax2.set_ylim([vmin, vmax])
     ax2.set_ylabel("5th Percentile Intensity", color="black")
-    ax2.bar(df["time"], df["focus_plane"].isnull() * vmax, color="dimgray")
+    ax2.bar(df["time"], df["length"].isnull() * vmax, color="dimgray")
     ax2.set_xlim(xlim)
 
     ax2_1.plot(df["time"], df["mean_intensity"], ".", color="darkgreen")
@@ -166,11 +160,11 @@ def create_measurements_overview(
 
     # Focus plane
     ax3.plot(df["time"], df["focus_slice_start"], color="black")
-    ax3.plot(df["time"], df["focus_slice_end"], color="black")
+    ax3.plot(df["time"], df["focus_slice_stop"] - 1, color="black")
     ax3.fill_between(
         df["time"],
         df["focus_slice_start"],
-        df["focus_slice_end"],
+        df["focus_slice_stop"] - 1,
         color="gray",
         alpha=0.3,
         label="Focus Slice Range",
