@@ -178,6 +178,16 @@ pixi run "jupyter lab" Visualize-Raw-Data.ipynb
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 
+[feature.jupyter.tasks.annotate_molt]
+cmd = """
+TASK=ANNOTATE_MOLT pixi run log_commit ;
+cp $PIXI_PROJECT_ROOT/source/s03_measure/Molt_Annotation.ipynb $WD ;
+cd $WD ;
+pixi run "jupyter lab" Molt_Annotation.ipynb
+"""
+env = { WD = "runs/example"}
+depends-on=["cache_status", "source_status"]
+
 [feature.jupyter.tasks.plot]
 cmd = """
 TASK=PLOT pixi run log_commit ;

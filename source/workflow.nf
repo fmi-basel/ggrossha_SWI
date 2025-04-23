@@ -33,6 +33,22 @@ process CONVERT2ZARR {
     """
 }
 
+process PROJECT {
+    label 'cpu_tiny'
+
+    input:
+    path segmentation_config
+    path inputs
+
+    output:
+    path "s01_convert_to_zarr_result.yaml"
+
+    script:
+    """
+    pixi run --no-lockfile-update python $baseDir/s02_segment/generate_projections.py --config $segmentation_config --inputs $inputs
+    """
+}
+
 process SEGMENT {
     label 'gpu'
 
@@ -82,6 +98,10 @@ workflow {
     configs = PREPARE(params.convert_to_zarr_config)
     zarrs = CONVERT2ZARR(configs.flatten())
     if (new File(params.segmentation_config).exists()) {
+        projections = PROJECT(
+            params.segmentation_config,
+            zarrs
+        )
         segmentations = SEGMENT(
             params.segmentation_config,
             zarrs

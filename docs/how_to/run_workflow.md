@@ -212,3 +212,18 @@ A jupyter notebook is provided to visualize the results.
     ```powershell
     $env:WD='runs/DATASET'; pixi run plot
     ```
+
+## Annotate Molt [Local]
+A jupyter notebook is provided to annotate molt points.
+
+=== "Linux and macOS"
+
+    ```bash
+    WD=runs/DATASET pixi run annotate_molt
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    $env:WD='runs/DATASET'; pixi run annotate_molt
+    ```

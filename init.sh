@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Initialize pixi and set cache and temporary directories.
-
-export PATH=$PATH:"$(pwd)/infrastructure/apps/pixi/bin"
-export PIXI_CACHE_DIR="$(pwd)/infrastructure/apps/pixi/.pixi_cache"
-export TMPDIR="$(pwd)/infrastructure/.tmp_$USER"
+WD="$(realpath .)"
+export PATH=$PATH:"$WD/infrastructure/apps/pixi/bin"
+export PIXI_CACHE_DIR="$WD/infrastructure/apps/pixi/.pixi_cache"
+export TMPDIR="$WD/infrastructure/.tmp_$USER"
 mkdir -p "$TMPDIR"
 
-mkdir -p "$(pwd)/slurm_output"
+mkdir -p "$WD/slurm_output"
 
 micro_sam="$HOME/.cache/micro_sam/"
 if [ ! -d "$micro_sam" ]; then

@@ -93,14 +93,22 @@ class Annotator:
         List of paths to the zarr files for each worm position.
     """
 
-    def __init__(self, viewer: Viewer, position_zarrs: list[Path]):
+    def __init__(
+        self, viewer: Viewer, position_zarrs: list[Path], exp_path: Path = None
+    ):
         self.viewer = viewer
+        self.exp_path = exp_path
         self.position_zarrs = position_zarrs
         self.current_position = -1
-        self.start_end_times = {
-            p.name: {"start_t": 0, "end_t": 0, "skip": True}
-            for p in self.position_zarrs
-        }
+        if (exp_path / "selection.csv").exists():
+            self.start_end_times = pd.read_csv(
+                exp_path / "selection.csv", index_col=0
+            ).to_dict(orient="index")
+        else:
+            self.start_end_times = {
+                p.name: {"start_t": 0, "end_t": 0, "skip": True}
+                for p in self.position_zarrs
+            }
         self.add_next()
         self.text_overlay()
 
@@ -112,6 +120,7 @@ class Annotator:
             self.viewer.dims.current_step[0]
         )
         self.text_overlay()
+        self.save()
 
     def set_end_time(self):
         """
@@ -121,6 +130,7 @@ class Annotator:
             self.viewer.dims.current_step[0]
         )
         self.text_overlay()
+        self.save()
 
     def skip(self):
         """
@@ -129,6 +139,7 @@ class Annotator:
         skip_val = self.start_end_times[self.viewer.layers[0].name]["skip"]
         self.start_end_times[self.viewer.layers[0].name]["skip"] = not skip_val
         self.text_overlay()
+        self.save()
 
     def text_overlay(self):
         """
@@ -204,3 +215,6 @@ class Annotator:
         )
         df["skip"] = df["skip"] | (df["start_t"] == df["end_t"])
         return df
+
+    def save(self):
+        self.get_selection_df().to_csv(self.exp_path / "selection.csv", index=False)
