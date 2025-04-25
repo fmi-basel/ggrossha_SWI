@@ -77,7 +77,6 @@ class ConvertToZarrConfig(IPAConfig):
                     default=str(loaded_config.legacy_yx_spacing),
                 ).ask()
             )
-            yx_spacing = (yx_spacing, yx_spacing)
             z_spacing = float(
                 questionary.text(
                     "[s01]: Z spacing (microns):",
