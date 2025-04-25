@@ -106,7 +106,7 @@ workflow {
             params.segmentation_config,
             zarrs
         )
-        MEASURE(
+        measurements = MEASURE(
             params.segmentation_config,
             segmentations
         )
