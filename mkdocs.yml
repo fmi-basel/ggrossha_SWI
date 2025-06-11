@@ -12,7 +12,10 @@ nav:
   - Tutorial:
     - 'Tutorials': tutorial/tutorials.md
   - 'How-to Guide':
+    - 'Prepare sample': how_to/Sample_preparation.md
+    - 'Microscope aquisition': how_to/Microscope_aquisition.md
     - 'Run Workflow': how_to/run_workflow.md
+    - 'Setup analysis': how_to/Analysis_environment_setup.md
     - 'Train Segmentation Model': how_to/train_network.md
   - Explanation:
     - 'Explanations': explanation/explanations.md
