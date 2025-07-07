@@ -33,12 +33,11 @@ class TrainConfig(IPAConfig):
                 output_dir=get_git_root() / "processed_data",
                 checkpoint="",
                 max_epochs=100,
-                batch_size=12,
+                batch_size=12,  # TODO increase batch size?
                 augment=True,
                 patch_size=(1024, 1024),
                 depth=4,
                 lr=0.0004,
-                zero_pad_z=(0, 0),
             )
 
         train_data_zarr = questionary.path(
@@ -100,18 +99,6 @@ class TrainConfig(IPAConfig):
                 validate=lambda x: x.replace(".", "", 1).isdigit(),
             ).ask()
         )
-        zero_pad_z = tuple(
-            map(
-                int,
-                questionary.text(
-                    "Zero pad z:",
-                    default=", ".join(map(str, loaded_config.zero_pad_z)),
-                    validate=lambda x: all(map(lambda y: y.isdigit(), x.split(", "))),
-                )
-                .ask()
-                .split(", "),
-            )
-        )
 
         output_dir = Path(output_dir) / "segmentation_model"
         output_dir.mkdir(exist_ok=True, parents=True)
@@ -127,7 +114,6 @@ class TrainConfig(IPAConfig):
             patch_size=patch_size,
             depth=depth,
             lr=lr,
-            zero_pad_z=zero_pad_z,
         )
 
         return config

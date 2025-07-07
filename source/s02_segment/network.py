@@ -27,7 +27,6 @@ class WormDataset(Dataset):
         overlap: bool = True,
         augment: bool = False,
         shuffle: bool = True,
-        zero_pad_z: tuple[int, int] = (0, 0),
     ):
         store = parse_url(zarr_file, mode="r").store
         store.key_separator = "."
@@ -36,7 +35,6 @@ class WormDataset(Dataset):
         self.patches = self.select_patches(
             patch_size, overlap, augment, shuffle=shuffle
         )
-        self.zero_pad_z = zero_pad_z
 
     def __len__(self):
         return len(self.patches)
@@ -52,16 +50,6 @@ class WormDataset(Dataset):
         if k > 0:
             raw = np.rot90(raw, k, axes=(1, 2))
             target = np.rot90(target, k, axes=(1, 2))
-
-        z_shape = raw.shape[0]
-        if z_shape == 25:
-            if np.any(np.array(self.zero_pad_z) > 0) and np.random.random() > 0.5:
-                raw[: self.zero_pad_z[0]] = 0
-                raw[-self.zero_pad_z[1] :] = 0
-        else:
-            pre_pad = (25 - z_shape) // 2
-            post_pad = 25 - z_shape - pre_pad
-            raw = np.pad(raw, ((pre_pad, post_pad), (0, 0), (0, 0)), mode="constant")
 
         return raw.copy(), (target.copy(), weights)
 
@@ -172,13 +160,12 @@ class WormSegmentationModule(LightningModule):
         patch_size: tuple[PositiveInt, PositiveInt] = (1024, 1024),
         depth: PositiveInt = 4,
         lr: PositiveFloat = 0.0004,
-        zero_pad_z: tuple[int, int] = (0, 0),
     ):
         super().__init__()
         self.save_hyperparameters()
         self.unet = DynUNet(
             spatial_dims=2,
-            in_channels=25,
+            in_channels=1,
             out_channels=3,
             kernel_size=(
                 (3, 3),
@@ -391,7 +378,6 @@ class WormSegmentationModule(LightningModule):
                 overlap=False,
                 augment=False,
                 shuffle=True,
-                zero_pad_z=self.hparams.zero_pad_z,
             ),
             num_workers=4,
             batch_size=self.hparams.batch_size,

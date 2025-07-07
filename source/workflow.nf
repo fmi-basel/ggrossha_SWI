@@ -104,7 +104,7 @@ workflow {
         )
         segmentations = SEGMENT(
             params.segmentation_config,
-            zarrs
+            projections
         )
         measurements = MEASURE(
             params.segmentation_config,

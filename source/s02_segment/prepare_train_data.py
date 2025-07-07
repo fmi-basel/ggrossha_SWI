@@ -74,7 +74,7 @@ def main(
         logger.info(f"Adding annotations from {annotated_file}.")
         store = parse_url(raw_file, mode="w").store
         store.key_separator = "."
-        raw_zarr = zarr.group(store)["0"]
+        raw_zarr = zarr.group(store)["mips"]
         annotated_data = imread(annotated_file)
 
         for i in tqdm(range(raw_zarr.shape[0]), leave=False):
@@ -98,30 +98,6 @@ def main(
                     )
 
     logger.info("Done.")
-
-
-def pad_z_to_25(raw_data):
-    """
-    Ensure that the z-dimension of the raw data is 25 slices.
-
-    Parameters
-    ----------
-    raw_data :
-        The raw data.
-    """
-    z_shape = raw_data.shape[1]
-    if z_shape == 25:
-        return raw_data
-    elif z_shape < 25:
-        pre_pad = (25 - z_shape) // 2
-        post_pad = 25 - z_shape - pre_pad
-        return np.pad(
-            raw_data, ((0, 0), (pre_pad, post_pad), (0, 0), (0, 0)), mode="constant"
-        )
-    else:
-        pre = (z_shape - 25) // 2
-        post = z_shape - 25 - pre
-        return raw_data[:, pre:-post]
 
 
 def visualize_sample(x, y, i, output_dir):
