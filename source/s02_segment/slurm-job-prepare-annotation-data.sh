@@ -32,7 +32,7 @@ echo "[INFO] [$STARTDATE] [$$] Working directory: $(pwd)"
 
 ### PUT YOUR CODE IN THIS SECTION
 
-WD="$working_dir" pixi run --no-lockfile-update prepare_annotation_data
+WD="$working_dir" pixi run -e micro-sam --no-lockfile-update prepare_annotation_data
 
 ### END OF PUT YOUR CODE IN THIS SECTION
 
