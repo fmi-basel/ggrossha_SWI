@@ -278,12 +278,15 @@ numcodecs = ">=0.15.1,<0.16"
 
 [feature.micro-sam.tasks.prepare_annotation_data]
 cmd = """
-TASK=PREPARE_ANNOTATION_DATA pixi run log_commit ;
+TASK=PREPARE_ANNOTATION_DATA pixi run -e default log_commit ;
 cd $WD ;
 pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_annotation_data.py
 """
 env = { WD = "runs/example"}
-depends-on=["cache_status", "source_status"]
+depends-on = [
+    { task = "cache_status", environment = "default" },
+    { task = "source_status", environment = "default" },
+]
 
 [feature.micro-sam.tasks.annotate_data]
 cmd = """
