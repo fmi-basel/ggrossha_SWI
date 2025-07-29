@@ -37,7 +37,7 @@ process PROJECT {
     label 'cpu_tiny'
 
     input:
-    path segmentation_config
+    path convert_to_zarr_config
     path inputs
 
     output:
@@ -45,7 +45,7 @@ process PROJECT {
 
     script:
     """
-    pixi run --no-lockfile-update python $baseDir/s02_segment/generate_projections.py --config $segmentation_config --inputs $inputs
+    pixi run --no-lockfile-update python $baseDir/s01_convert_to_zarr/generate_projections.py --config $convert_to_zarr_config --inputs $inputs
     """
 }
 
@@ -97,11 +97,11 @@ process QC {
 workflow {
     configs = PREPARE(params.convert_to_zarr_config)
     zarrs = CONVERT2ZARR(configs.flatten())
+    projections = PROJECT(
+        params.convert_to_zarr_config,
+        zarrs
+    )
     if (new File(params.segmentation_config).exists()) {
-        projections = PROJECT(
-            params.segmentation_config,
-            zarrs
-        )
         segmentations = SEGMENT(
             params.segmentation_config,
             projections
