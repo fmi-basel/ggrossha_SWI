@@ -72,7 +72,7 @@ def main(
         zip(raw_files, annotated_files), total=len(raw_files)
     ):
         logger.info(f"Adding annotations from {annotated_file}.")
-        store = parse_url(raw_file, mode="w").store
+        store = parse_url(raw_file, mode="r").store
         # store.key_separator = "."
         raw_zarr = zarr.group(store)["mips"]
         raw_zarr.chunk_store.key_separator = "."
@@ -175,13 +175,13 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
             compressor=Blosc(cname="zstd", clevel=3, shuffle=Blosc.SHUFFLE),
             dimension_separator=".",
         )
-        x[0] = raw_data[0]
+        x[0] = raw_data
         y[0] = seg_data[0]
 
     proof_read_dir = config.output_dir / f"proof_read_{name}"
     proof_read_dir.mkdir(exist_ok=True)
     visualize_sample(
-        raw_data[0],
+        raw_data,
         WormDataset.create_target(seg_data[0]),
         x.shape[0] - 1,
         proof_read_dir,
