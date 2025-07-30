@@ -73,8 +73,9 @@ def main(
     ):
         logger.info(f"Adding annotations from {annotated_file}.")
         store = parse_url(raw_file, mode="w").store
-        store.key_separator = "."
+        # store.key_separator = "."
         raw_zarr = zarr.group(store)["mips"]
+        raw_zarr.chunk_store.key_separator = "."
         annotated_data = imread(annotated_file)
 
         for i in tqdm(range(raw_zarr.shape[0]), leave=False):
