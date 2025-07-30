@@ -8,7 +8,7 @@
 #SBATCH --error=slurm_output/run-%j.err
 #SBATCH --partition=main
 #SBATCH --mem=8GB
-#SBATCH --gres=gpu:a40:1
+#SBATCH --gres=gpu:v100:1
 #SBATCH --constraint infiniband
 #SBATCH --time=12:00:00
 working_dir="$1"
