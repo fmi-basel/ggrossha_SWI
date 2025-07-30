@@ -175,7 +175,7 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
             compressor=Blosc(cname="zstd", clevel=3, shuffle=Blosc.SHUFFLE),
             dimension_separator=".",
         )
-        x[0] = raw_data
+        x[0] = raw_data[0]
         y[0] = seg_data[0]
 
     proof_read_dir = config.output_dir / f"proof_read_{name}"
