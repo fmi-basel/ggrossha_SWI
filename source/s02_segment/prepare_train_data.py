@@ -153,7 +153,6 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
         The segmentation mask.
     """
     seg_data = clean_segmentation_mask(seg_data)
-    raw_data = pad_z_to_25(raw_data)
     if "0" in x_zarr_container:
         x = x_zarr_container["0"]
         y = y_zarr_container["0"]
