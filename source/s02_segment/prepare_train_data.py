@@ -101,10 +101,9 @@ def main(
 
 
 def visualize_sample(x, y, i, output_dir):
-    idx = max(6, np.argmax(np.std(x, axis=(1))))
     fig = plt.figure(figsize=(10, 3.2))
     plt.subplot(1, 4, 1)
-    plt.imshow(x[idx - 6 : idx + 1].mean(0), cmap="gray")
+    plt.imshow(x, cmap="gray")
     plt.title("Raw data")
     plt.tick_params(
         left=False, right=False, labelleft=False, labelbottom=False, bottom=False
