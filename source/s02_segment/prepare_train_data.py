@@ -161,8 +161,8 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
     else:
         x = x_zarr_container.create_dataset(
             "0",
-            shape=(1, 25, 1024, 1024),
-            chunks=(1, 25, 1024, 1024),
+            shape=(1, 1024, 1024),
+            chunks=(1, 1024, 1024),
             dtype=raw_data.dtype,
             compressor=Blosc(cname="zstd", clevel=3, shuffle=Blosc.SHUFFLE),
             dimension_separator=".",
