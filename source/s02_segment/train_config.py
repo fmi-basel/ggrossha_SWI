@@ -6,10 +6,11 @@ from faim_ipa.utils import IPAConfig, get_git_root
 
 
 class TrainConfig(IPAConfig):
-    train_data_zarr: Path
-    val_data_zarr: Path
+    data_zarr: Path
     output_dir: Path
     checkpoint: Optional[Path] = None
+    val_split: float = 0.1
+    random_seed: int = 42
     max_epochs: int
     batch_size: int
     augment: bool
@@ -28,10 +29,11 @@ class TrainConfig(IPAConfig):
             loaded_config = cls.load()
         except FileNotFoundError:
             loaded_config = cls(
-                train_data_zarr=get_git_root() / "processed_data",
-                val_data_zarr=get_git_root() / "processed_data",
+                        data_zarr=get_git_root() / "processed_data",
                 output_dir=get_git_root() / "processed_data",
                 checkpoint="",
+                val_split=0.1,
+                random_seed=42,
                 max_epochs=100,
                 batch_size=12,  # TODO increase batch size?
                 augment=True,
@@ -40,12 +42,23 @@ class TrainConfig(IPAConfig):
                 lr=0.0004,
             )
 
-        train_data_zarr = questionary.path(
-            "Train data zarr:", default=str(loaded_config.train_data_zarr)
+        data_zarr = questionary.path(
+            "Data zarr:", default=str(loaded_config.data_zarr)
         ).ask()
-        val_data_zarr = questionary.path(
-            "Validation data zarr:", default=str(loaded_config.val_data_zarr)
-        ).ask()
+        val_split = float(
+            questionary.text(
+                "Validation split ratio (0-1):",
+                default=str(loaded_config.val_split),
+                validate=lambda x: x.replace(".", "", 1).isdigit() and 0 <= float(x) <= 1,
+            ).ask()
+        )
+        random_seed = int(
+            questionary.text(
+                "Random seed:",
+                default=str(loaded_config.random_seed),
+                validate=lambda x: x.isdigit(),
+            ).ask()
+        )
         output_dir = questionary.path(
             "Output directory:", default=str(loaded_config.output_dir)
         ).ask()
@@ -104,10 +117,11 @@ class TrainConfig(IPAConfig):
         output_dir.mkdir(exist_ok=True, parents=True)
 
         config = TrainConfig(
-            train_data_zarr=Path(train_data_zarr),
-            val_data_zarr=Path(val_data_zarr),
+            data_zarr=Path(data_zarr),
             output_dir=output_dir,
             checkpoint=Path(checkpoint) if checkpoint else None,
+            val_split=val_split,
+            random_seed=random_seed,
             max_epochs=max_epochs,
             batch_size=batch_size,
             augment=augment,

@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Union, Any
+from typing import Union, Any, Optional
 
 import numpy as np
 import torch
@@ -27,7 +27,42 @@ class WormDataset(Dataset):
         overlap: bool = True,
         augment: bool = False,
         shuffle: bool = True,
+        zero_pad_z: tuple[int, int] = (0, 0),
+        indices: Optional[list[int]] = None,
     ):
+        """Initialize the WormDataset.
+
+        Parameters
+        ----------
+        zarr_file : Union[Path, str]
+            Path to the Zarr container with the data
+        patch_size : tuple[int, int], optional
+            Size of patches to extract, by default (1024, 1024)
+        overlap : bool, optional
+            Whether to use overlapping patches, by default True
+        augment : bool, optional
+            Whether to use data augmentation, by default False
+        shuffle : bool, optional
+            Whether to shuffle the patches, by default True
+        zero_pad_z : tuple[int, int], optional
+            Zero padding for z dimension, by default (0, 0)
+        indices : Optional[list[int]], optional
+            Specific indices to use from the dataset, by default None
+            Used for train/validation splitting
+        """
+        self.store = parse_url(zarr_file, mode="r").store
+        self.store.key_separator = "."
+        self.data = zarr.group(self.store)
+        self.x = self.data["x/0"]
+        self.y = self.data["y/0"]
+
+        self.patches = self.select_patches(patch_size, overlap, augment, shuffle)
+        if indices is not None:
+            self.patches = [self.patches[i] for i in indices]
+
+        self.augment = augment
+        self.patch_size = patch_size
+        self.zero_pad_z = zero_pad_z
         store = parse_url(zarr_file, mode="r").store
         store.key_separator = "."
         self.zarr_x = zarr.group(store)["x"]["0"]
@@ -155,14 +190,35 @@ class WormSegmentationModule(LightningModule):
         self,
         batch_size: int,
         augment: bool,
-        train_data_zarr: Union[Path, str],
-        val_data_zarr: Union[Path, str],
+        data_zarr: Union[Path, str],
         patch_size: tuple[PositiveInt, PositiveInt] = (1024, 1024),
         depth: PositiveInt = 4,
         lr: PositiveFloat = 0.0004,
+        zero_pad_z: tuple[int, int] = (0, 0),
+        val_split: float = 0.1,
+        random_seed: int = 42,
     ):
         super().__init__()
         self.save_hyperparameters()
+        
+        # Calculate split indices once during initialization
+        temp_dataset = WormDataset(
+            zarr_file=self.hparams.data_zarr,
+            patch_size=self.hparams.patch_size,
+            overlap=True,
+            augment=False,
+            shuffle=False,
+            zero_pad_z=self.hparams.zero_pad_z,
+        )
+        num_samples = len(temp_dataset)
+        indices = list(range(num_samples))
+        np.random.seed(self.hparams.random_seed)
+        np.random.shuffle(indices)
+        split = int(np.floor(self.hparams.val_split * num_samples))
+        self.train_indices = indices[split:]
+        self.val_indices = indices[:split]
+        del temp_dataset  # Clean up the temporary dataset
+
         self.unet = DynUNet(
             spatial_dims=2,
             in_channels=1,
@@ -328,61 +384,53 @@ class WormSegmentationModule(LightningModule):
             },
         }
 
-    def train_dataloader(self):
+    def _worker_init_fn(self, worker_id):
+        """Initialize worker process to use all CPU cores."""
+        # Otherwise workers stay on the same physical core.
+        os.sched_setaffinity(0, range(os.cpu_count()))
+
+    def get_dataloader(self, train_mode: bool = True) -> DataLoader:
         """
-        Creates a pytorch data loader which consumes a `SynapseDataset`.
+        Creates a pytorch data loader for either training or validation.
+        
+        Parameters
+        ----------
+        train_mode : bool
+            If True, configures for training (overlap, augment, shuffle).
+            If False, configures for validation (no overlap, no augment, no shuffle).
 
         Returns
         -------
-        train data loader
+        DataLoader
+            Configured for either training or validation.
         """
-
-        def _worker_init_fn(worker_id):
-            # Otherwise workers stay on the same physical core.
-            os.sched_setaffinity(0, range(os.cpu_count()))
+        dataset = WormDataset(
+            zarr_file=self.hparams.data_zarr,
+            patch_size=self.hparams.patch_size,
+            overlap=train_mode,  # overlap only during training
+            augment=train_mode and self.hparams.augment,  # augment only during training
+            shuffle=train_mode,  # shuffle only during training
+            zero_pad_z=self.hparams.zero_pad_z,
+            indices=self.train_indices if train_mode else self.val_indices
+        )
 
         return DataLoader(
-            dataset=WormDataset(
-                zarr_file=self.hparams.train_data_zarr,
-                patch_size=self.hparams.patch_size,
-                overlap=True,
-                augment=self.hparams.augment,
-                shuffle=True,
-                zero_pad_z=self.hparams.zero_pad_z,
-            ),
-            num_workers=24,
-            pin_memory=True,
-            persistent_workers=True,
-            prefetch_factor=2,
+            dataset=dataset,
             batch_size=self.hparams.batch_size,
-            worker_init_fn=_worker_init_fn,
+            num_workers=24 if train_mode else 4,
+            pin_memory=train_mode,
+            persistent_workers=train_mode,
+            prefetch_factor=2 if train_mode else None,
+            worker_init_fn=self._worker_init_fn
         )
+
+    def train_dataloader(self):
+        """Get the training data loader."""
+        return self.get_dataloader(train_mode=True)
 
     def val_dataloader(self):
-        """
-        Creates a pytorch data loader which consumes a `SynapseDataset`.
-
-        Returns
-        -------
-        validation data loader
-        """
-
-        def _worker_init_fn(worker_id):
-            # Otherwise workers stay on the same physical core.
-            os.sched_setaffinity(0, range(os.cpu_count()))
-
-        return DataLoader(
-            dataset=WormDataset(
-                zarr_file=self.hparams.val_data_zarr,
-                patch_size=(1024, 1024),
-                overlap=False,
-                augment=False,
-                shuffle=True,
-            ),
-            num_workers=4,
-            batch_size=self.hparams.batch_size,
-            worker_init_fn=_worker_init_fn,
-        )
+        """Get the validation data loader."""
+        return self.get_dataloader(train_mode=False)
 
 
 class LogPredictionSamplesCallback(Callback):

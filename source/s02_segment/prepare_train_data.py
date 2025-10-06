@@ -27,39 +27,24 @@ def main(
     logger.info("Config:")
     logger.info(pretty_repr(config))
 
-    train_data_name = "worm-segmentation-train-data.zarr"
-    val_data_name = "worm-segmentation-val-data.zarr"
-    train_data_path = config.output_dir / train_data_name
-    val_data_path = config.output_dir / val_data_name
-    if train_data_path.exists():
-        logger.info(f"Found a training data container at {train_data_path}.")
+    data_path = config.output_dir / "worm-segmentation-data.zarr"
+    if data_path.exists():
+        logger.info(f"Found a data container at {data_path}.")
         logger.info("Will append to this container.")
-        train_store = parse_url(train_data_path, mode="a").store
-        train_store.key_separator = "."
-        train_store._dimension_separator = "."
-        train_data_zarr = zarr.group(train_store)
-        train_x_zarr = train_data_zarr["x"]
-        train_y_zarr = train_data_zarr["y"]
-        val_store = parse_url(val_data_path, mode="a").store
-        val_store.key_separator = "."
-        val_store._dimension_separator = "."
-        val_data_zarr = zarr.group(val_store)
-        val_x_zarr = val_data_zarr["x"]
-        val_y_zarr = val_data_zarr["y"]
+        store = parse_url(data_path, mode="a").store
+        store.key_separator = "."
+        store._dimension_separator = "."
+        data_zarr = zarr.group(store)
+        x_zarr = data_zarr["x"]
+        y_zarr = data_zarr["y"]
     else:
-        logger.info(f"Creating a new training data container at {train_data_path}.")
-        train_store = parse_url(train_data_path, mode="w").store
-        train_store.key_separator = "."
-        train_store._dimension_separator = "."
-        train_data_zarr = zarr.group(train_store)
-        train_x_zarr = train_data_zarr.create_group("x")
-        train_y_zarr = train_data_zarr.create_group("y")
-        val_store = parse_url(val_data_path, mode="w").store
-        val_store.key_separator = "."
-        val_store._dimension_separator = "."
-        val_data_zarr = zarr.group(val_store)
-        val_x_zarr = val_data_zarr.create_group("x")
-        val_y_zarr = val_data_zarr.create_group("y")
+        logger.info(f"Creating a new data container at {data_path}.")
+        store = parse_url(data_path, mode="w").store
+        store.key_separator = "."
+        store._dimension_separator = "."
+        data_zarr = zarr.group(store)
+        x_zarr = data_zarr.create_group("x")
+        y_zarr = data_zarr.create_group("y")
 
     annotated_files = list(Path(config.annotation_dir).glob("*-SEG.tif"))
     raw_files = [
@@ -81,22 +66,13 @@ def main(
         for i in tqdm(range(raw_zarr.shape[0]), leave=False):
             annotated_plane = annotated_data[i : i + 1]
             if (annotated_plane > 0).sum() > 0:
-                if i % 10 == 0:
                     add_to_zarr(
-                        x_zarr_container=val_x_zarr,
-                        y_zarr_container=val_y_zarr,
-                        raw_data=raw_zarr[i : i + 1, config.brightfield_channel],
-                        seg_data=annotated_plane,
-                        name="val",
-                    )
-                else:
-                    add_to_zarr(
-                        x_zarr_container=train_x_zarr,
-                        y_zarr_container=train_y_zarr,
-                        raw_data=raw_zarr[i : i + 1, config.brightfield_channel],
-                        seg_data=annotated_plane,
-                        name="train",
-                    )
+                    x_zarr_container=x_zarr,
+                    y_zarr_container=y_zarr,
+                    raw_data=raw_zarr[i : i + 1, config.brightfield_channel],
+                    seg_data=annotated_plane,
+                    name="data",
+                )
 
     logger.info("Done.")
 

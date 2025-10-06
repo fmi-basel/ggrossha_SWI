@@ -26,22 +26,28 @@ def main(config: TrainConfig):
         logger.info("Loading model from checkpoint...")
         model = WormSegmentationModule.load_from_checkpoint(
             config.checkpoint,
-            train_data_zarr=config.train_data_zarr,
-            val_data_zarr=config.val_data_zarr,
+            data_zarr=config.data_zarr,
+            val_split=config.val_split,
+            random_seed=config.random_seed,
+            zero_pad_z=config.zero_pad_z,
+            batch_size=config.batch_size,
+            augment=config.augment,
+            patch_size=config.patch_size,
+            depth=config.depth,
+            lr=config.lr
         )
-        if "zero_pad_z" not in model.hparams:
-            model.hparams["zero_pad_z"] = config.zero_pad_z
     else:
         logger.info("Creating new model...")
         model = WormSegmentationModule(
             batch_size=config.batch_size,
             augment=config.augment,
-            train_data_zarr=config.train_data_zarr,
-            val_data_zarr=config.val_data_zarr,
+            data_zarr=config.data_zarr,
             patch_size=config.patch_size,
             depth=config.depth,
             lr=config.lr,
             zero_pad_z=config.zero_pad_z,
+            val_split=config.val_split,
+            random_seed=config.random_seed
         )
 
     trainer = Trainer(
