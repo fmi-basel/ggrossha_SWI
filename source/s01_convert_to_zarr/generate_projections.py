@@ -20,7 +20,7 @@ def main(
 
     for path in zarr_containers:
         logger.info(f"Processing {path}")
-        group = zarr.open(str(path), mode="a")
+        group: zarr.Group = zarr.open(str(path), mode="a")
         data = group["0"]
         shape = data.shape
         yx_size = data.chunks[-2:]
@@ -30,6 +30,7 @@ def main(
             chunks=(1, 1, *yx_size),
             dtype=data.dtype,
             overwrite=True,
+            dimension_separator=".",
         )
         projection_slices = []
         for i in range(shape[0]):
