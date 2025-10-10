@@ -181,7 +181,7 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
     proof_read_dir = config.output_dir / f"proof_read_{name}"
     proof_read_dir.mkdir(exist_ok=True)
     visualize_sample(
-        raw_data,
+        raw_data[0],
         WormDataset.create_target(seg_data[0]),
         x.shape[0] - 1,
         proof_read_dir,
