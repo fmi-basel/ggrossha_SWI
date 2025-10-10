@@ -16,7 +16,6 @@ class TrainConfig(IPAConfig):
     patch_size: tuple[int, int]
     depth: int
     lr: float
-    zero_pad_z: tuple[int, int]
 
     @staticmethod
     def config_name():
