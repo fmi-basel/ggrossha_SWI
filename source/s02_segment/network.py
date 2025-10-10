@@ -348,7 +348,6 @@ class WormSegmentationModule(LightningModule):
                 overlap=True,
                 augment=self.hparams.augment,
                 shuffle=True,
-                zero_pad_z=self.hparams.zero_pad_z,
             ),
             num_workers=24,
             pin_memory=True,

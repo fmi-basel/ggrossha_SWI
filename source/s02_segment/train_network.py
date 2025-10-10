@@ -29,8 +29,6 @@ def main(config: TrainConfig):
             train_data_zarr=config.train_data_zarr,
             val_data_zarr=config.val_data_zarr,
         )
-        if "zero_pad_z" not in model.hparams:
-            model.hparams["zero_pad_z"] = config.zero_pad_z
     else:
         logger.info("Creating new model...")
         model = WormSegmentationModule(
@@ -41,7 +39,6 @@ def main(config: TrainConfig):
             patch_size=config.patch_size,
             depth=config.depth,
             lr=config.lr,
-            zero_pad_z=config.zero_pad_z,
         )
 
     trainer = Trainer(
