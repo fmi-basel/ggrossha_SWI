@@ -88,7 +88,6 @@ python $PIXI_PROJECT_ROOT/source/s02_segment/train_data_config.py
 """
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
-outputs = ["prepare_training_data_config.yaml"]
 
 [tasks.prepare_train_data_slurm]
 description = "Prepare training data for worm segmentation (SLURM)"
