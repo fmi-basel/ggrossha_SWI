@@ -48,8 +48,8 @@ class WormDataset(Dataset):
         target = self.create_target(self.zarr_y[i][y_slice, x_slice])
         weights = self.compute_weights(target)
         if k > 0:
-            raw = np.rot90(raw, k, axes=(1, 2))
-            target = np.rot90(target, k, axes=(1, 2))
+            raw = np.rot90(raw, k, axes=(0, 1))
+            target = np.rot90(target, k, axes=(0, 1))
 
         return raw.copy(), (target.copy(), weights)
 
