@@ -48,8 +48,8 @@ class WormDataset(Dataset):
         target = self.create_target(self.zarr_y[i][y_slice, x_slice])
         weights = self.compute_weights(target)
         if k > 0:
-            raw = np.rot90(raw, k, axes=(0, 1))
-            target = np.rot90(target, k, axes=(0, 1))
+            raw = np.rot90(raw, k, axes=(-2, -1))
+            target = np.rot90(target, k, axes=(-2, -1))
 
         return raw.copy(), (target.copy(), weights)
 
@@ -402,14 +402,14 @@ class LogPredictionSamplesCallback(Callback):
     def _plot_summary(self, raw, gt, pred):
         fig = plt.figure(figsize=(15, 10.5))
         plt.subplot(2, 3, 1)
-        plt.imshow(raw[8:15].max(0), cmap="gray")
+        plt.imshow(raw, cmap="gray")
         plt.tick_params(
             left=False, right=False, labelleft=False, labelbottom=False, bottom=False
         )
         plt.title("Raw MIP")
 
         plt.subplot(2, 3, 2)
-        plt.imshow(raw[8:15].max(0), cmap="gray")
+        plt.imshow(raw, cmap="gray")
         plt.imshow(
             self.get_outline((gt[0] > 0.5).astype(np.uint8)), cmap=self.cmap_outline
         )
@@ -425,7 +425,7 @@ class LogPredictionSamplesCallback(Callback):
         plt.title("Ground Truth")
 
         plt.subplot(2, 3, 3)
-        plt.imshow(raw[8:15].max(0), cmap="gray")
+        plt.imshow(raw, cmap="gray")
         plt.imshow(
             self.get_outline((pred[0] > 0.5).astype(np.uint8)), cmap=self.cmap_outline
         )
