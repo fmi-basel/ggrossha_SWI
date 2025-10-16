@@ -491,7 +491,7 @@ class LogPredictionSamplesCallback(Callback):
 
                 images.append(
                     self._plot_summary(
-                        raw,
+                        raw[0],
                         gt,
                         p,
                     )
