@@ -44,7 +44,7 @@ class WormDataset(Dataset):
             idx = idx.tolist()
 
         i, y_slice, x_slice, k = self.patches[idx]
-        raw = self.normalize_raw(self.zarr_x[i])[y_slice, x_slice]
+        raw = self.normalize_raw(self.zarr_x[i])[np.newaxis, y_slice, x_slice]
         target = self.create_target(self.zarr_y[i][y_slice, x_slice])
         weights = self.compute_weights(target)
         if k > 0:
