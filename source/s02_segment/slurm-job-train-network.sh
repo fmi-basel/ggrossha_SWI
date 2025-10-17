@@ -7,7 +7,7 @@
 #SBATCH --output=slurm_output/run-%j.out
 #SBATCH --error=slurm_output/run-%j.err
 #SBATCH --partition=main
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:a10080:1
 #SBATCH --mem=196GB
 #SBATCH --constraint infiniband
 #SBATCH --time=48:00:00
