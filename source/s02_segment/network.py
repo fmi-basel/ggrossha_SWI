@@ -29,7 +29,7 @@ class WormDataset(Dataset):
         shuffle: bool = True,
     ):
         store = parse_url(zarr_file, mode="r").store
-        # store.key_separator = "."
+        store.key_separator = "."
         self.zarr_x = zarr.group(store)["0"]
         self.zarr_y = zarr.group(store)["labels"]["mask"]["0"]
         self.patches = self.select_patches(
