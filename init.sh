@@ -3,7 +3,7 @@
 WD="$(realpath .)"
 export PATH=$PATH:"$WD/infrastructure/apps/pixi/bin"
 export PIXI_CACHE_DIR="$WD/infrastructure/apps/pixi/.pixi_cache"
-export TMPDIR="$WD/infrastructure/.tmp_$USER"
+export TMPDIR="/tmp/.tmp_$USER"
 mkdir -p "$TMPDIR"
 
 mkdir -p "$WD/slurm_output"
