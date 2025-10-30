@@ -58,6 +58,7 @@ Pixi is the package manager for the SWI-Template. Install it in the project dire
   ```bash
   cd ggrossha_SWI
   source install.sh
+  source init.sh
   ```
 - **Windows (PowerShell):**
   ```powershell
