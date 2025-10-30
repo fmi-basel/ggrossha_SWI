@@ -9,18 +9,18 @@ import zarr
 from faim_ipa.utils import get_git_root, create_logger
 
 sys.path.append(str(get_git_root()))
-from source.s02_segment.config import SegmentationConfig
+from source.s01_convert_to_zarr.config import ConvertToZarrConfig
 
 
 def main(
-    config: SegmentationConfig,
+    config: ConvertToZarrConfig,
     zarr_containers: list[Path],
 ):
     logger = create_logger("generate_projections")
 
     for path in zarr_containers:
         logger.info(f"Processing {path}")
-        group = zarr.open(str(path), mode="a")
+        group: zarr.Group = zarr.open(str(path), mode="a")
         data = group["0"]
         shape = data.shape
         yx_size = data.chunks[-2:]
@@ -30,6 +30,7 @@ def main(
             chunks=(1, 1, *yx_size),
             dtype=data.dtype,
             overwrite=True,
+            dimension_separator=".",
         )
         projection_slices = []
         for i in range(shape[0]):
@@ -71,12 +72,12 @@ def longest_true_slice(bool_array):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="s02_segmentation_config.yaml")
+    parser.add_argument("--config", type=str, default="s01_convert_to_zarr_config.yaml")
     parser.add_argument("--inputs", type=str, default="s01_convert_to_zarr_result.yaml")
 
     args = parser.parse_args()
 
-    config = SegmentationConfig.load(args.config)
+    config = ConvertToZarrConfig.load(args.config)
     with open(args.inputs, "r") as f:
         inputs = [Path(f) for f in yaml.safe_load(f)]
 

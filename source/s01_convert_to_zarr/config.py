@@ -10,6 +10,7 @@ class ConvertToZarrConfig(IPAConfig):
     output_dir: Path = Path("/")
     preview: bool = False
     channels: list[int] = [1]
+    brightfield_channel_index: int = 0
     bin: int = 2
     mip: bool = True
     selection_csv: Path = Path("/selection.csv")
@@ -48,6 +49,14 @@ class ConvertToZarrConfig(IPAConfig):
             .ask()
             .split(",")
         ]
+
+        brightfield_channel_index = int(
+            questionary.text(
+                "[s02]: Brightfield channel index (zero-indexed):",
+                validate=lambda x: x.isdigit() and int(x) >= 0,
+                default=str(loaded_config.brightfield_channel_index),
+            ).ask()
+        )
 
         bin = int(
             questionary.text(
@@ -96,6 +105,7 @@ class ConvertToZarrConfig(IPAConfig):
             output_dir=Path(output_dir),
             preview=True,
             channels=channels,
+            brightfield_channel_index=brightfield_channel_index,
             bin=bin,
             mip=mip,
             selection_csv=Path(selection_csv),

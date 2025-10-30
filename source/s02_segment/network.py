@@ -27,16 +27,14 @@ class WormDataset(Dataset):
         overlap: bool = True,
         augment: bool = False,
         shuffle: bool = True,
-        zero_pad_z: tuple[int, int] = (0, 0),
     ):
         store = parse_url(zarr_file, mode="r").store
         store.key_separator = "."
-        self.zarr_x = zarr.group(store)["x"]["0"]
-        self.zarr_y = zarr.group(store)["y"]["0"]
+        self.zarr_x = zarr.group(store)["0"]
+        self.zarr_y = zarr.group(store)["labels"]["mask"]["0"]
         self.patches = self.select_patches(
             patch_size, overlap, augment, shuffle=shuffle
         )
-        self.zero_pad_z = zero_pad_z
 
     def __len__(self):
         return len(self.patches)
@@ -46,22 +44,12 @@ class WormDataset(Dataset):
             idx = idx.tolist()
 
         i, y_slice, x_slice, k = self.patches[idx]
-        raw = self.normalize_raw(self.zarr_x[i])[:, y_slice, x_slice]
+        raw = self.normalize_raw(self.zarr_x[i])[np.newaxis, y_slice, x_slice]
         target = self.create_target(self.zarr_y[i][y_slice, x_slice])
         weights = self.compute_weights(target)
         if k > 0:
-            raw = np.rot90(raw, k, axes=(1, 2))
-            target = np.rot90(target, k, axes=(1, 2))
-
-        z_shape = raw.shape[0]
-        if z_shape == 25:
-            if np.any(np.array(self.zero_pad_z) > 0) and np.random.random() > 0.5:
-                raw[: self.zero_pad_z[0]] = 0
-                raw[-self.zero_pad_z[1] :] = 0
-        else:
-            pre_pad = (25 - z_shape) // 2
-            post_pad = 25 - z_shape - pre_pad
-            raw = np.pad(raw, ((pre_pad, post_pad), (0, 0), (0, 0)), mode="constant")
+            raw = np.rot90(raw, k, axes=(-2, -1))
+            target = np.rot90(target, k, axes=(-2, -1))
 
         return raw.copy(), (target.copy(), weights)
 
@@ -172,13 +160,12 @@ class WormSegmentationModule(LightningModule):
         patch_size: tuple[PositiveInt, PositiveInt] = (1024, 1024),
         depth: PositiveInt = 4,
         lr: PositiveFloat = 0.0004,
-        zero_pad_z: tuple[int, int] = (0, 0),
     ):
         super().__init__()
         self.save_hyperparameters()
         self.unet = DynUNet(
             spatial_dims=2,
-            in_channels=25,
+            in_channels=1,
             out_channels=3,
             kernel_size=(
                 (3, 3),
@@ -361,7 +348,6 @@ class WormSegmentationModule(LightningModule):
                 overlap=True,
                 augment=self.hparams.augment,
                 shuffle=True,
-                zero_pad_z=self.hparams.zero_pad_z,
             ),
             num_workers=24,
             pin_memory=True,
@@ -391,7 +377,6 @@ class WormSegmentationModule(LightningModule):
                 overlap=False,
                 augment=False,
                 shuffle=True,
-                zero_pad_z=self.hparams.zero_pad_z,
             ),
             num_workers=4,
             batch_size=self.hparams.batch_size,
@@ -417,14 +402,14 @@ class LogPredictionSamplesCallback(Callback):
     def _plot_summary(self, raw, gt, pred):
         fig = plt.figure(figsize=(15, 10.5))
         plt.subplot(2, 3, 1)
-        plt.imshow(raw[8:15].max(0), cmap="gray")
+        plt.imshow(raw, cmap="gray")
         plt.tick_params(
             left=False, right=False, labelleft=False, labelbottom=False, bottom=False
         )
         plt.title("Raw MIP")
 
         plt.subplot(2, 3, 2)
-        plt.imshow(raw[8:15].max(0), cmap="gray")
+        plt.imshow(raw, cmap="gray")
         plt.imshow(
             self.get_outline((gt[0] > 0.5).astype(np.uint8)), cmap=self.cmap_outline
         )
@@ -440,7 +425,7 @@ class LogPredictionSamplesCallback(Callback):
         plt.title("Ground Truth")
 
         plt.subplot(2, 3, 3)
-        plt.imshow(raw[8:15].max(0), cmap="gray")
+        plt.imshow(raw, cmap="gray")
         plt.imshow(
             self.get_outline((pred[0] > 0.5).astype(np.uint8)), cmap=self.cmap_outline
         )
@@ -506,7 +491,7 @@ class LogPredictionSamplesCallback(Callback):
 
                 images.append(
                     self._plot_summary(
-                        raw,
+                        raw[0],
                         gt,
                         p,
                     )

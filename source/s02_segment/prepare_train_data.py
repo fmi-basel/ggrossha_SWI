@@ -72,9 +72,10 @@ def main(
         zip(raw_files, annotated_files), total=len(raw_files)
     ):
         logger.info(f"Adding annotations from {annotated_file}.")
-        store = parse_url(raw_file, mode="w").store
-        store.key_separator = "."
-        raw_zarr = zarr.group(store)["0"]
+        store = parse_url(raw_file, mode="r").store
+        # store.key_separator = "."
+        raw_zarr = zarr.group(store)["mips"]
+        raw_zarr.chunk_store.key_separator = "."
         annotated_data = imread(annotated_file)
 
         for i in tqdm(range(raw_zarr.shape[0]), leave=False):
@@ -100,35 +101,10 @@ def main(
     logger.info("Done.")
 
 
-def pad_z_to_25(raw_data):
-    """
-    Ensure that the z-dimension of the raw data is 25 slices.
-
-    Parameters
-    ----------
-    raw_data :
-        The raw data.
-    """
-    z_shape = raw_data.shape[1]
-    if z_shape == 25:
-        return raw_data
-    elif z_shape < 25:
-        pre_pad = (25 - z_shape) // 2
-        post_pad = 25 - z_shape - pre_pad
-        return np.pad(
-            raw_data, ((0, 0), (pre_pad, post_pad), (0, 0), (0, 0)), mode="constant"
-        )
-    else:
-        pre = (z_shape - 25) // 2
-        post = z_shape - 25 - pre
-        return raw_data[:, pre:-post]
-
-
 def visualize_sample(x, y, i, output_dir):
-    idx = max(6, np.argmax(np.std(x, axis=(1, 2))))
     fig = plt.figure(figsize=(10, 3.2))
     plt.subplot(1, 4, 1)
-    plt.imshow(x[idx - 6 : idx + 1].mean(0), cmap="gray")
+    plt.imshow(x, cmap="gray")
     plt.title("Raw data")
     plt.tick_params(
         left=False, right=False, labelleft=False, labelbottom=False, bottom=False
@@ -177,7 +153,6 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
         The segmentation mask.
     """
     seg_data = clean_segmentation_mask(seg_data)
-    raw_data = pad_z_to_25(raw_data)
     if "0" in x_zarr_container:
         x = x_zarr_container["0"]
         y = y_zarr_container["0"]
@@ -186,8 +161,8 @@ def add_to_zarr(x_zarr_container, y_zarr_container, raw_data, seg_data, name):
     else:
         x = x_zarr_container.create_dataset(
             "0",
-            shape=(1, 25, 1024, 1024),
-            chunks=(1, 25, 1024, 1024),
+            shape=(1, 1024, 1024),
+            chunks=(1, 1024, 1024),
             dtype=raw_data.dtype,
             compressor=Blosc(cname="zstd", clevel=3, shuffle=Blosc.SHUFFLE),
             dimension_separator=".",

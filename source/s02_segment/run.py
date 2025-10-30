@@ -40,7 +40,7 @@ class ZarrDataset(Dataset):
         store.key_separator = "."
         self.zarr = zarr.open(
             store,
-        )[0]
+        )["mips"]
         self.shape = self.zarr.shape
         self.brightfield_channel_index = brightfield_channel_index
 
@@ -52,12 +52,7 @@ class ZarrDataset(Dataset):
         mean = np.mean(data)
         std = np.std(data)
         normalized = ((data - mean) / std).astype(np.float32)
-        z_shape = normalized.shape[0]
-        pre_pad = (25 - z_shape) // 2
-        post_pad = 25 - z_shape - pre_pad
-        return np.pad(
-            normalized, ((pre_pad, post_pad), (0, 0), (0, 0)), mode="constant"
-        )
+        return normalized
 
 
 def load_model(model_checkpoint: Union[Path, str]):
@@ -127,9 +122,9 @@ def main(
             logger=logger,
         )
 
-        compute_focus_plane_and_qc(
-            config.brightfield_channel_index, name, config.output_dir, zarr_container
-        )
+        # compute_focus_plane_and_qc(
+        #     config.brightfield_channel_index, name, config.output_dir, zarr_container
+        # )
         outputs.append(
             {
                 "raw_data": zarr_container,

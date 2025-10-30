@@ -4,8 +4,9 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = [
     "Tim-Oliver Buchholz <tim-oliver.buchholz@fmi.ch>",
+    "Jan Eglinger <jan.eglinger@fmi.ch>",
 ]
-channels = ["conda-forge", "bioconda", "pytorch"]
+channels = ["conda-forge", "bioconda"]
 platforms = ["linux-64", "win-64", "osx-arm64", "osx-64"]
 
 [system-requirements]
@@ -17,6 +18,7 @@ source_status = "python -m faim_ipa.pixi.src_status source"
 log_commit = {cmd = 'python -m faim_ipa.pixi.log_commit $TASK', env = {TASK = ""}}
 
 [tasks.link_dataset]
+description = "Create symbolic link in raw_data to acquisition data"
 cmd = """
 cd raw_data ;
 ln -s $(realpath -s --relative-to="." "$ACQUIRED_DATA") ;
@@ -24,6 +26,7 @@ ln -s $(realpath -s --relative-to="." "$ACQUIRED_DATA") ;
 env = { ACQUIRED_DATA = ""}
 
 [tasks.config]
+description = "Build run configuration"
 cmd = """
 mkdir -p $WD ;
 TASK=BUILD_CONFIG pixi run log_commit ;
@@ -85,9 +88,9 @@ python $PIXI_PROJECT_ROOT/source/s02_segment/train_data_config.py
 """
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
-outputs = ["prepare_training_data_config.yaml"]
 
 [tasks.prepare_train_data_slurm]
+description = "Prepare training data for worm segmentation (SLURM)"
 cmd = """
 TASK=PREPARE_TRAIN_DATA_SLURM pixi run log_commit ;
 sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-prepare-train-data.sh $ACCOUNT $WD
@@ -107,6 +110,7 @@ depends-on=["cache_status", "source_status"]
 outputs = ["train_config.yaml"]
 
 [tasks.train_network_slurm]
+description = "Train worm segmentation network (SLURM)"
 cmd = """
 TASK=TRAIN_NETWORK_SLURM pixi run log_commit ;
 sbatch --account $ACCOUNT $PIXI_PROJECT_ROOT/source/s02_segment/slurm-job-train-network.sh $ACCOUNT $WD
@@ -235,10 +239,11 @@ pytorch = ">=2.6.0,<2.7"
 monai = ">=1.3.1,<1.4"
 h5py = ">=3.11.0,<3.12"
 opencv = ">=4.10.0,<4.11"
-ignite = {version="*", channel="pytorch"}
+pytorch-ignite = ">=0.5.1,<0.6"
 tensorboard = ">=2.17.0,<2.18"
 
 [feature.worm-segmentation.tasks.train_model]
+description = "Train worm segmentation model (local)"
 cmd = """
 TASK=TRAIN_MODEL pixi run log_commit ;
 cd $WD ;
@@ -256,13 +261,10 @@ python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_train_data.py
 env = { WD = "runs/example"}
 depends-on=["cache_status", "source_status"]
 
-[feature.micro-sam]
-channels = ["conda-forge"]
-
 [feature.micro-sam.dependencies]
 python = "3.11.*"
 napari = ">=0.5.0,<0.6"
-micro_sam = ">=1.3.1,<1.4"
+micro_sam = ">=1.6.0,<2"
 pyqt = ">=5.15.9,<6"
 lxml-html-clean = ">=0.4.1,<0.5"
 lxml = ">=4.9.2,<5"
@@ -278,12 +280,15 @@ numcodecs = ">=0.15.1,<0.16"
 
 [feature.micro-sam.tasks.prepare_annotation_data]
 cmd = """
-TASK=PREPARE_ANNOTATION_DATA pixi run log_commit ;
+TASK=PREPARE_ANNOTATION_DATA pixi run -e default log_commit ;
 cd $WD ;
 pixi run python $PIXI_PROJECT_ROOT/source/s02_segment/prepare_annotation_data.py
 """
 env = { WD = "runs/example"}
-depends-on=["cache_status", "source_status"]
+depends-on = [
+    { task = "cache_status", environment = "default" },
+    { task = "source_status", environment = "default" },
+]
 
 [feature.micro-sam.tasks.annotate_data]
 cmd = """
