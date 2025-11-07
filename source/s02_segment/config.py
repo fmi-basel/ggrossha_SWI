@@ -15,6 +15,7 @@ class SegmentationConfig(IPAConfig):
     data_dir: Path
     output_dir: Path
     checkpoint: Path
+    brightfield_channel_index: int
     batch_size: int
 
     @staticmethod
@@ -47,6 +48,13 @@ class SegmentationConfig(IPAConfig):
             validate=lambda x: os.path.isfile(x) and x.endswith(".ckpt"),
             default=str(loaded_config.checkpoint),
         ).ask()
+        brightfield_channel_index = int(
+            questionary.text(
+                "[s02]: Brightfield channel index (zero-indexed):",
+                validate=lambda x: x.isdigit() and int(x) >= 0,
+                default=str(loaded_config.brightfield_channel_index),
+            ).ask()
+        )
         batch_size = int(
             questionary.text(
                 "[s02]: Batch size:",
@@ -59,6 +67,7 @@ class SegmentationConfig(IPAConfig):
             data_dir=Path(data_dir),
             output_dir=Path(output_dir) / "s02_segment",
             checkpoint=Path(model_checkpoint),
+            brightfield_channel_index=brightfield_channel_index,
             batch_size=batch_size,
         )
         config.output_dir.mkdir(exist_ok=True)
