@@ -48,7 +48,7 @@ class ZarrDataset(Dataset):
         return self.shape[0]
 
     def __getitem__(self, item):
-        data = self.zarr[item, self.brightfield_channel_index].astype(np.float32)
+        data = self.zarr[item, self.brightfield_channel_index][None].astype(np.float32)
         mean = np.mean(data)
         std = np.std(data)
         normalized = ((data - mean) / std).astype(np.float32)
