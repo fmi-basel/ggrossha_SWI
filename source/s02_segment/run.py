@@ -220,14 +220,14 @@ def run_worm_segmentation(
             pred = predict(batch, model)
             prediction = da.from_array(
                 np.array(pred[:, ::2]),
-                chunks=(1, 2, 1024, 1024),
+                chunks=(1, 2, 1200, 1200),
             )
             logger.info(f"prediction.shape = {prediction.shape}")
 
             post_processed = prediction.map_blocks(
                 post_process,
                 dtype=np.uint8,
-                chunks=(1, 1, 1024, 1024),
+                chunks=(1, 1, 1200, 1200),
             )
 
             sum_pp = da.expand_dims(
