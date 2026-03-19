@@ -71,6 +71,11 @@ class ConvertToZarrConfig(IPAConfig):
             default=loaded_config.mip,
         ).ask()
 
+        preview = questionary.confirm(
+            "[s01]: Create preview?",
+            default=loaded_config.preview,
+        ).ask()
+
         legacy_compressed_tiff = questionary.confirm(
             "[s01]: Convert legacy compressed TIFF format?",
             default=loaded_config.legacy_compressed_tif,
@@ -103,7 +108,7 @@ class ConvertToZarrConfig(IPAConfig):
         config = ConvertToZarrConfig(
             raw_data_dir=Path(raw_data_dir),
             output_dir=Path(output_dir),
-            preview=True,
+            preview=preview,
             channels=channels,
             brightfield_channel_index=brightfield_channel_index,
             bin=bin,
