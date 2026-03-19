@@ -237,3 +237,6 @@ runs/**/*.html
 
 # include githash.log
 !**/githash.log
+
+# RUNS
+runs/

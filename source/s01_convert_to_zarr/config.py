@@ -71,6 +71,11 @@ class ConvertToZarrConfig(IPAConfig):
             default=loaded_config.mip,
         ).ask()
 
+        preview = questionary.confirm(
+            "[s01]: Create preview?",
+            default=loaded_config.preview,
+        ).ask()
+
         legacy_compressed_tiff = questionary.confirm(
             "[s01]: Convert legacy compressed TIFF format?",
             default=loaded_config.legacy_compressed_tif,
@@ -112,6 +117,7 @@ class ConvertToZarrConfig(IPAConfig):
             legacy_compressed_tif=legacy_compressed_tiff,
             legacy_yx_spacing=yx_spacing,
             legacy_z_spacing=z_spacing,
+            preview=preview,
         )
 
         config.output_dir.mkdir(exist_ok=True)
