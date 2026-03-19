@@ -108,7 +108,7 @@ class ConvertToZarrConfig(IPAConfig):
         config = ConvertToZarrConfig(
             raw_data_dir=Path(raw_data_dir),
             output_dir=Path(output_dir),
-            preview=True,
+            preview=preview,
             channels=channels,
             brightfield_channel_index=brightfield_channel_index,
             bin=bin,
@@ -117,7 +117,6 @@ class ConvertToZarrConfig(IPAConfig):
             legacy_compressed_tif=legacy_compressed_tiff,
             legacy_yx_spacing=yx_spacing,
             legacy_z_spacing=z_spacing,
-            preview=preview,
         )
 
         config.output_dir.mkdir(exist_ok=True)
